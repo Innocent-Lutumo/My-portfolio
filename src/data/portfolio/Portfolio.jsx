@@ -49,7 +49,6 @@ import Footer from "../../components/Footer";
 
 // Import your data
 import { skills } from "../skills";
-// import { projects } from "../projects";
 import { experience } from "../experience";
 import { education } from "../education";
 
@@ -140,20 +139,20 @@ export default function Portfolio() {
                 py: { xs: 3, md: 5 },
               }}
             >
-              <Box 
-                sx={{ 
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  alignItems: { xs: 'center', md: 'flex-start' },
-                  gap: { xs: 4, md: 6 }
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  alignItems: { xs: "center", md: "flex-start" },
+                  gap: { xs: 4, md: 6 },
                 }}
               >
                 {/* Image Section - Floated Left */}
-                <Box 
-                  sx={{ 
+                <Box
+                  sx={{
                     flexShrink: 0,
-                    display: "flex", 
-                    justifyContent: { xs: "center", md: "flex-start" }
+                    display: "flex",
+                    justifyContent: { xs: "center", md: "flex-start" },
                   }}
                 >
                   <Box
@@ -172,7 +171,7 @@ export default function Portfolio() {
                 </Box>
 
                 {/* Text Section - Floated Right of Image */}
-                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
+                <Box sx={{ flex: 1, textAlign: { xs: "center", md: "left" } }}>
                   <Typography
                     variant={isMobile ? "h5" : "h4"}
                     fontWeight="bold"
@@ -207,8 +206,8 @@ export default function Portfolio() {
                     I'm a passionate full-stack developer from Tanzania,
                     dedicated to building elegant and scalable digital
                     solutions. With a strong focus on clean UI/UX, I bring
-                    modern web technologies and thoughtful architecture
-                    together to create seamless, user-focused experiences.
+                    modern web technologies and thoughtful architecture together
+                    to create seamless, user-focused experiences.
                   </Typography>
 
                   {/* Tech Stack Icons */}
@@ -279,13 +278,27 @@ export default function Portfolio() {
         </Container>
 
         {/* Skills Section */}
-        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+        <Container maxWidth="lg" sx={{ mb: { xs: 6, sm: 8 } }}>
           <AnimatedSection>
-            <Paper sx={sectionStyles}>
+            <Paper
+              sx={{
+                px: { xs: 2, sm: 4, md: 6 },
+                py: { xs: 3, sm: 5 },
+                bgcolor: "rgba(26, 26, 26, 0.85)",
+                borderRadius: 4,
+                boxShadow: 3,
+              }}
+            >
               <SectionTitle icon={<Code />} title="Skills" />
-              <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mt: 1 }}>
+
+              <Grid
+                container
+                spacing={{ xs: 2, sm: 3, md: 4 }}
+                sx={{ mt: { xs: 2, sm: 3 } }}
+                justifyContent="center"
+              >
                 {skills.map((skill, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                     <SkillCard skill={skill} />
                   </Grid>
                 ))}
@@ -299,91 +312,93 @@ export default function Portfolio() {
           <AnimatedSection>
             <Paper sx={sectionStyles}>
               <SectionTitle icon={<Work />} title="Projects" />
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'center',
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                   minHeight: 200,
-                  mt: 2
+                  mt: 2,
                 }}
               >
                 <Button
                   sx={{
-                    position: 'relative',
+                    position: "relative",
                     width: 150,
                     height: 150,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                    color: 'white',
-                    border: '3px solid rgba(255,255,255,0.2)',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    textTransform: 'none',
-                    overflow: 'hidden',
-                    transition: 'all 0.3s ease-in-out',
-                    '&:hover': {
-                      transform: 'scale(1.1) rotate(5deg)',
-                      boxShadow: '0 15px 35px rgba(33, 150, 243, 0.4)',
-                      background: 'linear-gradient(45deg, #1976D2 30%, #1565C0 90%)',
+                    borderRadius: "50%",
+                    background:
+                      "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                    color: "white",
+                    border: "3px solid rgba(255,255,255,0.2)",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.1) rotate(5deg)",
+                      boxShadow: "0 15px 35px rgba(33, 150, 243, 0.4)",
+                      background:
+                        "linear-gradient(45deg, #1976D2 30%, #1565C0 90%)",
                     },
-                    '&::before': {
+                    "&::before": {
                       content: '"View Projects Done"',
-                      position: 'absolute',
-                      top: 'initial',
-                      left: 'initial',
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      animation: 'rotateText 8s linear infinite',
-                      transformOrigin: 'center',
+                      position: "absolute",
+                      top: "initial",
+                      left: "initial",
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      animation: "rotateText 8s linear infinite",
+                      transformOrigin: "center",
                     },
-                    '&::after': {
+                    "&::after": {
                       content: '""',
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
                       width: 0,
                       height: 0,
-                      borderLeft: '15px solid white',
-                      borderTop: '10px solid transparent',
-                      borderBottom: '10px solid transparent',
-                      marginLeft: '3px',
-                      animation: 'pulse 2s ease-in-out infinite',
+                      borderLeft: "15px solid white",
+                      borderTop: "10px solid transparent",
+                      borderBottom: "10px solid transparent",
+                      marginLeft: "3px",
+                      animation: "pulse 2s ease-in-out infinite",
                     },
-                    '@keyframes rotateText': {
-                      '0%': {
-                        transform: 'rotate(0deg)',
+                    "@keyframes rotateText": {
+                      "0%": {
+                        transform: "rotate(0deg)",
                       },
-                      '100%': {
-                        transform: 'rotate(360deg)',
+                      "100%": {
+                        transform: "rotate(360deg)",
                       },
                     },
-                    '@keyframes pulse': {
-                      '0%, 100%': {
+                    "@keyframes pulse": {
+                      "0%, 100%": {
                         opacity: 1,
-                        transform: 'translate(-50%, -50%) scale(1)',
+                        transform: "translate(-50%, -50%) scale(1)",
                       },
-                      '50%': {
+                      "50%": {
                         opacity: 0.7,
-                        transform: 'translate(-50%, -50%) scale(1.1)',
+                        transform: "translate(-50%, -50%) scale(1.1)",
                       },
                     },
                   }}
                   onClick={() => {
                     // Add your navigation logic here
-                    console.log('Navigate to projects page');
+                    console.log("Navigate to projects page");
                   }}
                 >
-                  <ArrowForward 
-                    sx={{ 
+                  <ArrowForward
+                    sx={{
                       fontSize: 24,
                       zIndex: 2,
-                      position: 'relative'
-                    }} 
+                      position: "relative",
+                    }}
                   />
                 </Button>
               </Box>

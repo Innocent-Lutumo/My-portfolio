@@ -10,8 +10,6 @@ import {
   Chip,
   IconButton,
   Paper,
-  Card,
-  CardContent,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -23,6 +21,7 @@ import {
   Code,
   Work,
   School,
+  ArrowForward,
 } from "@mui/icons-material";
 import { Typewriter } from "react-simple-typewriter";
 import {
@@ -33,6 +32,7 @@ import {
   SiHtml5,
   SiCss3,
 } from "react-icons/si";
+
 import innocImg from "../../images/innoc.jpg";
 
 // Import your components
@@ -49,7 +49,7 @@ import Footer from "../../components/Footer";
 
 // Import your data
 import { skills } from "../skills";
-import { projects } from "../projects";
+// import { projects } from "../projects";
 import { experience } from "../experience";
 import { education } from "../education";
 
@@ -61,7 +61,6 @@ export default function Portfolio() {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  // const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
   // Improved section styles
   const sectionStyles = {
@@ -88,9 +87,9 @@ export default function Portfolio() {
       }}
     >
       {/* Navigation */}
-      <AppBar 
-        position="fixed" 
-        sx={{ 
+      <AppBar
+        position="fixed"
+        sx={{
           bgcolor: "rgba(26, 26, 26, 0.95)",
           backdropFilter: "blur(10px)",
         }}
@@ -107,8 +106,8 @@ export default function Portfolio() {
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
             Portfolio
           </Typography>
-          <Button 
-            color="inherit" 
+          <Button
+            color="inherit"
             onClick={() => setContactDialogOpen(true)}
             sx={{ fontWeight: 500 }}
           >
@@ -127,43 +126,56 @@ export default function Portfolio() {
       />
 
       {/* Main Content */}
-      <Box component="main" sx={{ pt: { xs: 10, sm: 12 }, px: { xs: 1, sm: 2 } }}>
-        
+      <Box
+        component="main"
+        sx={{ pt: { xs: 10, sm: 12 }, px: { xs: 1, sm: 2 } }}
+      >
         {/* Hero/About Section */}
-        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+        <Container maxWidth="xl" sx={{ mb: { xs: 4, sm: 6 } }}>
           <AnimatedSection>
-            <Paper sx={sectionStyles}>
-              <Grid container spacing={{ xs: 2, md: 4 }} alignItems="center">
-                {/* Image */}
-                <Grid item xs={12} md={4}>
+            <Paper
+              sx={{
+                ...sectionStyles,
+                px: { xs: 2, md: 5 },
+                py: { xs: 3, md: 5 },
+              }}
+            >
+              <Box 
+                sx={{ 
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: { xs: 'center', md: 'flex-start' },
+                  gap: { xs: 4, md: 6 }
+                }}
+              >
+                {/* Image Section - Floated Left */}
+                <Box 
+                  sx={{ 
+                    flexShrink: 0,
+                    display: "flex", 
+                    justifyContent: { xs: "center", md: "flex-start" }
+                  }}
+                >
                   <Box
+                    component="img"
+                    src={innocImg}
+                    alt="Innocent Felix Lutumo"
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      mb: { xs: 2, md: 0 },
+                      width: { xs: 240, sm: 300, md: 360 },
+                      height: { xs: 240, sm: 300, md: 360 },
+                      borderRadius: 4,
+                      border: "4px solid rgba(255,255,255,0.2)",
+                      objectFit: "cover",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
                     }}
-                  >
-                    <Box
-                      component="img"
-                      src={innocImg}
-                      alt="Innocent Felix Lutumo"
-                      sx={{
-                        width: { xs: 200, sm: 250, md: "100%" },
-                        maxWidth: 300,
-                        height: "auto",
-                        borderRadius: 3,
-                        border: "3px solid rgba(255,255,255,0.2)",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                </Grid>
+                  />
+                </Box>
 
-                {/* Content */}
-                <Grid item xs={12} md={8}>
-                  <Typography 
-                    variant={isMobile ? "h5" : "h4"} 
-                    fontWeight="bold" 
+                {/* Text Section - Floated Right of Image */}
+                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
+                  <Typography
+                    variant={isMobile ? "h5" : "h4"}
+                    fontWeight="bold"
                     gutterBottom
                     sx={{ mb: 2 }}
                   >
@@ -182,45 +194,48 @@ export default function Portfolio() {
                     />
                   </Typography>
 
+                  {/* Text content on the right of the image */}
                   <Typography
                     variant="body1"
-                    sx={{ 
-                      mb: 3, 
-                      lineHeight: 1.7,
-                      color: "rgba(255,255,255,0.9)",
-                      fontSize: { xs: "0.95rem", sm: "1rem" }
+                    sx={{
+                      mb: 3,
+                      lineHeight: 1.8,
+                      color: "rgba(255,255,255,0.92)",
+                      fontSize: { xs: "1rem", sm: "1.05rem" },
                     }}
                   >
-                    Passionate full-stack developer from Tanzania, building scalable 
-                    and modern web solutions. Specializing in responsive, user-centered 
-                    applications with clean architecture and modern practices.
+                    I'm a passionate full-stack developer from Tanzania,
+                    dedicated to building elegant and scalable digital
+                    solutions. With a strong focus on clean UI/UX, I bring
+                    modern web technologies and thoughtful architecture
+                    together to create seamless, user-focused experiences.
                   </Typography>
 
                   {/* Tech Stack Icons */}
-                  <Box 
-                    sx={{ 
-                      display: "flex", 
-                      gap: 2, 
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 2,
                       mb: 3,
                       flexWrap: "wrap",
-                      justifyContent: { xs: "center", md: "flex-start" }
+                      justifyContent: { xs: "center", md: "flex-start" },
                     }}
                   >
-                    <SiHtml5 size={28} color="#e44d26" />
-                    <SiCss3 size={28} color="#264de4" />
-                    <SiJavascript size={28} color="#f0db4f" />
-                    <SiReact size={28} color="#61dafb" />
-                    <SiPython size={28} color="#3776AB" />
-                    <SiDjango size={28} color="#092e20" />
+                    <SiHtml5 size={30} color="#e44d26" />
+                    <SiCss3 size={30} color="#264de4" />
+                    <SiJavascript size={30} color="#f0db4f" />
+                    <SiReact size={30} color="#61dafb" />
+                    <SiPython size={30} color="#3776AB" />
+                    <SiDjango size={30} color="#092e20" />
                   </Box>
 
                   {/* Contact Info */}
-                  <Box 
-                    sx={{ 
-                      display: "flex", 
-                      flexWrap: "wrap", 
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
                       gap: 1,
-                      justifyContent: { xs: "center", md: "flex-start" }
+                      justifyContent: { xs: "center", md: "flex-start" },
                     }}
                   >
                     <Chip
@@ -230,8 +245,7 @@ export default function Portfolio() {
                       sx={{
                         bgcolor: "rgba(33, 150, 243, 0.1)",
                         color: "#2196f3",
-                        borderColor: "#2196f3",
-                        fontSize: "0.75rem",
+                        fontSize: "0.8rem",
                       }}
                       variant="outlined"
                     />
@@ -242,8 +256,7 @@ export default function Portfolio() {
                       sx={{
                         bgcolor: "rgba(76, 175, 80, 0.1)",
                         color: "#4caf50",
-                        borderColor: "#4caf50",
-                        fontSize: "0.75rem",
+                        fontSize: "0.8rem",
                       }}
                       variant="outlined"
                     />
@@ -254,14 +267,13 @@ export default function Portfolio() {
                       sx={{
                         bgcolor: "rgba(255, 152, 0, 0.1)",
                         color: "#ff9800",
-                        borderColor: "#ff9800",
-                        fontSize: "0.75rem",
+                        fontSize: "0.8rem",
                       }}
                       variant="outlined"
                     />
                   </Box>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Paper>
           </AnimatedSection>
         </Container>
@@ -282,21 +294,99 @@ export default function Portfolio() {
           </AnimatedSection>
         </Container>
 
-        {/* Projects Section */}
+        {/* Projects Section - Animated Button */}
         <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
           <AnimatedSection>
             <Paper sx={sectionStyles}>
               <SectionTitle icon={<Work />} title="Projects" />
-              <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mt: 1 }}>
-                {projects.map((project, index) => (
-                  <Grid item xs={12} sm={6} lg={4} key={index}>
-                    <ProjectCard
-                      project={project}
-                      onClick={() => setSelectedProject(project)}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  minHeight: 200,
+                  mt: 2
+                }}
+              >
+                <Button
+                  sx={{
+                    position: 'relative',
+                    width: 150,
+                    height: 150,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                    color: 'white',
+                    border: '3px solid rgba(255,255,255,0.2)',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    textTransform: 'none',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      transform: 'scale(1.1) rotate(5deg)',
+                      boxShadow: '0 15px 35px rgba(33, 150, 243, 0.4)',
+                      background: 'linear-gradient(45deg, #1976D2 30%, #1565C0 90%)',
+                    },
+                    '&::before': {
+                      content: '"View Projects Done"',
+                      position: 'absolute',
+                      top: 'initial',
+                      left: 'initial',
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      animation: 'rotateText 8s linear infinite',
+                      transformOrigin: 'center',
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 0,
+                      height: 0,
+                      borderLeft: '15px solid white',
+                      borderTop: '10px solid transparent',
+                      borderBottom: '10px solid transparent',
+                      marginLeft: '3px',
+                      animation: 'pulse 2s ease-in-out infinite',
+                    },
+                    '@keyframes rotateText': {
+                      '0%': {
+                        transform: 'rotate(0deg)',
+                      },
+                      '100%': {
+                        transform: 'rotate(360deg)',
+                      },
+                    },
+                    '@keyframes pulse': {
+                      '0%, 100%': {
+                        opacity: 1,
+                        transform: 'translate(-50%, -50%) scale(1)',
+                      },
+                      '50%': {
+                        opacity: 0.7,
+                        transform: 'translate(-50%, -50%) scale(1.1)',
+                      },
+                    },
+                  }}
+                  onClick={() => {
+                    // Add your navigation logic here
+                    console.log('Navigate to projects page');
+                  }}
+                >
+                  <ArrowForward 
+                    sx={{ 
+                      fontSize: 24,
+                      zIndex: 2,
+                      position: 'relative'
+                    }} 
+                  />
+                </Button>
+              </Box>
             </Paper>
           </AnimatedSection>
         </Container>

@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,10 +10,10 @@ import {
   Chip,
   IconButton,
   Paper,
-  Divider,
+  Card,
+  CardContent,
   useMediaQuery,
   useTheme,
-  CircularProgress, // For Suspense fallback
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -23,10 +23,7 @@ import {
   Code,
   Work,
   School,
-  LinkedIn,
-  GitHub,
-  Twitter,
-} from "@mui/icons-material"; // Added social media icons
+} from "@mui/icons-material";
 import { Typewriter } from "react-simple-typewriter";
 import {
   SiJavascript,
@@ -36,23 +33,21 @@ import {
   SiHtml5,
   SiCss3,
 } from "react-icons/si";
-import innocImg from "../../images/innoc.jpg"; // Ensure this path is correct
+import innocImg from "../../images/innoc.jpg";
 
-// Lazy load components for better performance
-const AnimatedSection = lazy(() => import("../../components/AnimatedSection"));
-const SectionTitle = lazy(() => import("../../components/SectionTitle"));
-const ProjectCard = lazy(() => import("../../components/ProjectCard"));
-const ExperienceItem = lazy(() => import("../../components/ExperienceItem"));
-const EducationItem = lazy(() => import("../../components/EducationItem"));
-const SkillCard = lazy(() => import("../../components/SkillCard"));
-const ContactDialog = lazy(() => import("../../components/ContactDialog"));
-const ProjectDialog = lazy(() => import("../../components/ProjectDialog"));
-const NavigationDrawers = lazy(() =>
-  import("../../components/NavigationDrawers")
-);
-const Footer = lazy(() => import("../../components/Footer"));
+// Import your components
+import AnimatedSection from "../../components/AnimatedSection";
+import SectionTitle from "../../components/SectionTitle";
+import ProjectCard from "../../components/ProjectCard";
+import ExperienceItem from "../../components/ExperienceItem";
+import EducationItem from "../../components/EducationItem";
+import SkillCard from "../../components/SkillCard";
+import ContactDialog from "../../components/ContactDialog";
+import ProjectDialog from "../../components/ProjectDialog";
+import NavigationDrawers from "../../components/NavigationDrawers";
+import Footer from "../../components/Footer";
 
-// Data (assuming these are well-structured and optimized)
+// Import your data
 import { skills } from "../skills";
 import { projects } from "../projects";
 import { experience } from "../experience";
@@ -62,469 +57,290 @@ export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [leftNavOpen, setLeftNavOpen] = useState(false);
-  const [rightNavOpen, setRightNavOpen] = useState(false); // Unused in current AppBar, consider removing or integrating
+  const [rightNavOpen, setRightNavOpen] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Added for finer control
+  // const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
-  // Centralized Paper styles for consistency and reusability
-  const commonPaperStyles = {
-    p: { xs: 3, sm: 4 },
-    bgcolor: "#1e1e1e",
-    borderRadius: 3,
-    boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-    color: "#e0e0e0",
-    backdropFilter: "blur(4px)",
-    transition: "all 0.3s ease",
+  // Improved section styles
+  const sectionStyles = {
+    p: { xs: 2, sm: 3, md: 4 },
+    bgcolor: "#1a1a1a",
+    borderRadius: { xs: 2, sm: 3 },
+    boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+    color: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.1)",
+    transition: "all 0.3s ease-in-out",
     "&:hover": {
-      transform: "translateY(-4px)",
-      boxShadow: "0 6px 30px rgba(0,0,0,0.6)",
+      transform: "translateY(-2px)",
+      boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+      borderColor: "rgba(255,255,255,0.2)",
     },
-  };
-
-  const handleProjectClick = (project) => {
-    setSelectedProject(project);
-  };
-
-  const handleContactOpen = () => {
-    setContactDialogOpen(true);
-  };
-
-  const handleContactClose = () => {
-    setContactDialogOpen(false);
-  };
-
-  const handleLeftNavToggle = () => {
-    setLeftNavOpen(!leftNavOpen);
   };
 
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "black",
+        bgcolor: "#0a0a0a",
         minHeight: "100vh",
         color: "white",
-        // Smooth scrolling for anchor links
-        scrollBehavior: "smooth",
       }}
     >
-      <AppBar
-        position="fixed"
-        color="primary"
-        sx={{ zIndex: theme.zIndex.drawer + 1 }}
+      {/* Navigation */}
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          bgcolor: "rgba(26, 26, 26, 0.95)",
+          backdropFilter: "blur(10px)",
+        }}
       >
         <Toolbar>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
             edge="start"
-            onClick={handleLeftNavToggle}
+            onClick={() => setLeftNavOpen(true)}
             sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, fontWeight: "bold" }}
-          >
-            Innocent Felix
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
+            Portfolio
           </Typography>
-          <Button color="inherit" onClick={handleContactOpen}>
-            Contact Me
+          <Button 
+            color="inherit" 
+            onClick={() => setContactDialogOpen(true)}
+            sx={{ fontWeight: 500 }}
+          >
+            Contact
           </Button>
         </Toolbar>
       </AppBar>
 
-      {/* Lazy loaded components wrapped in Suspense for loading states */}
-      <Suspense
-        fallback={
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: "80vh",
-            }}
-          >
-            <CircularProgress color="inherit" />
-          </Box>
-        }
-      >
-        <NavigationDrawers
-          leftNavOpen={leftNavOpen}
-          rightNavOpen={rightNavOpen} // Still passed, but consider if rightNav is truly needed
-          setLeftNavOpen={setLeftNavOpen}
-          setRightNavOpen={setRightNavOpen}
-          isMobile={isMobile}
-          setContactDialogOpen={setContactDialogOpen}
-        />
+      <NavigationDrawers
+        leftNavOpen={leftNavOpen}
+        rightNavOpen={rightNavOpen}
+        setLeftNavOpen={setLeftNavOpen}
+        setRightNavOpen={setRightNavOpen}
+        isMobile={isMobile}
+        setContactDialogOpen={setContactDialogOpen}
+      />
 
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            pt: { xs: 8, md: 10 },
-            px: { xs: 2, sm: 3, md: 4 },
-          }}
-        >
-          {/* About Section */}
-          <Box id="about" my={{ xs: 6, md: 8 }}>
-            <AnimatedSection>
-              <Container maxWidth="lg">
-                <Paper
-                  sx={{
-                    ...commonPaperStyles,
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" }, // Stack on mobile, row on larger screens
-                    alignItems: { xs: "center", sm: "flex-start" }, // Center image on mobile
-                    minHeight: { xs: "auto", sm: 300 }, // Adjust minHeight for mobile
-                    overflow: "hidden",
-                    textAlign: { xs: "center", sm: "left" }, // Center text on mobile
-                  }}
-                >
-                  {/* Image container */}
+      {/* Main Content */}
+      <Box component="main" sx={{ pt: { xs: 10, sm: 12 }, px: { xs: 1, sm: 2 } }}>
+        
+        {/* Hero/About Section */}
+        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+          <AnimatedSection>
+            <Paper sx={sectionStyles}>
+              <Grid container spacing={{ xs: 2, md: 4 }} alignItems="center">
+                {/* Image */}
+                <Grid item xs={12} md={4}>
                   <Box
                     sx={{
-                      flex: { xs: "none", sm: "0 0 200px" }, // More flexible width for image
                       display: "flex",
-                      alignItems: "center",
                       justifyContent: "center",
-                      p: { xs: 2, sm: 3 }, // Adjust padding
-                      borderRight: {
-                        xs: "none",
-                        sm: "2px solid rgba(255, 255, 255, 0.2)",
-                      },
-                      borderBottom: {
-                        xs: "2px solid rgba(255, 255, 255, 0.2)",
-                        sm: "none",
-                      }, // Add bottom border for mobile
-                      boxSizing: "border-box",
+                      mb: { xs: 2, md: 0 },
                     }}
                   >
                     <Box
                       component="img"
                       src={innocImg}
-                      alt="Innocent Felix Lutumo - Profile Picture"
+                      alt="Innocent Felix Lutumo"
                       sx={{
-                        maxHeight: { xs: 200, sm: 250 }, // Smaller image on mobile
-                        maxWidth: "100%", // Ensure image fits its container
-                        width: "auto",
-                        borderRadius: 2,
-                        border: "4px solid white",
-                        objectFit: "cover", // Use cover to fill the space
-                        display: "block",
-                        margin: "0 auto",
+                        width: { xs: 200, sm: 250, md: "100%" },
+                        maxWidth: 300,
+                        height: "auto",
+                        borderRadius: 3,
+                        border: "3px solid rgba(255,255,255,0.2)",
+                        objectFit: "cover",
                       }}
                     />
                   </Box>
+                </Grid>
 
-                  {/* Text container */}
-                  <Box
-                    sx={{
-                      flex: 1,
-                      color: "white",
-                      p: { xs: 2, sm: 3 }, // Adjust padding
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
+                {/* Content */}
+                <Grid item xs={12} md={8}>
+                  <Typography 
+                    variant={isMobile ? "h5" : "h4"} 
+                    fontWeight="bold" 
+                    gutterBottom
+                    sx={{ mb: 2 }}
+                  >
+                    <Typewriter
+                      words={[
+                        "I'm Innocent Felix Lutumo",
+                        "I'm a Full Stack Developer",
+                        "I'm a UI/UX Designer",
+                      ]}
+                      loop
+                      cursor
+                      cursorStyle="|"
+                      typeSpeed={70}
+                      deleteSpeed={50}
+                      delaySpeed={1500}
+                    />
+                  </Typography>
+
+                  <Typography
+                    variant="body1"
+                    sx={{ 
+                      mb: 3, 
+                      lineHeight: 1.7,
+                      color: "rgba(255,255,255,0.9)",
+                      fontSize: { xs: "0.95rem", sm: "1rem" }
                     }}
                   >
-                    <Typography
-                      variant={isSmallScreen ? "h5" : "h4"}
-                      fontWeight="bold"
-                      gutterBottom
-                    >
-                      <Typewriter
-                        words={[
-                          "I'm Innocent Felix Lutumo",
-                          "I'm a Full Stack Developer",
-                          "I'm a UI/UX Designer",
-                        ]}
-                        loop
-                        cursor
-                        cursorStyle="|"
-                        typeSpeed={70}
-                        deleteSpeed={50}
-                        delaySpeed={1500}
-                      />
-                    </Typography>
+                    Passionate full-stack developer from Tanzania, building scalable 
+                    and modern web solutions. Specializing in responsive, user-centered 
+                    applications with clean architecture and modern practices.
+                  </Typography>
 
-                    <Typography
-                      variant="body1"
-                      color="text.secondary" // Use theme's secondary text color
-                      lineHeight={1.7}
-                      sx={{ mt: 2, mb: 3 }}
-                    >
-                      I am a passionate and versatile software developer from
-                      Tanzania who builds scalable, efficient, and modern web
-                      solutions. With a strong foundation in both front-end and
-                      back-end technologies, I specialize in creating
-                      responsive, user-centered applications. My work is guided
-                      by a deep understanding of user experience design, clean
-                      architecture, and modern software practices. I am
-                      continuously learning, adapting to new technologies, and
-                      eager to solve real-world problems through innovation and
-                      code.
-                    </Typography>
+                  {/* Tech Stack Icons */}
+                  <Box 
+                    sx={{ 
+                      display: "flex", 
+                      gap: 2, 
+                      mb: 3,
+                      flexWrap: "wrap",
+                      justifyContent: { xs: "center", md: "flex-start" }
+                    }}
+                  >
+                    <SiHtml5 size={28} color="#e44d26" />
+                    <SiCss3 size={28} color="#264de4" />
+                    <SiJavascript size={28} color="#f0db4f" />
+                    <SiReact size={28} color="#61dafb" />
+                    <SiPython size={28} color="#3776AB" />
+                    <SiDjango size={28} color="#092e20" />
+                  </Box>
 
-                    {/* Tech Stack Icons */}
-                    <Box
-                      mt={2}
-                      display="flex"
-                      alignItems="center"
-                      flexWrap="wrap"
-                      gap={2} // Increased gap for better spacing
-                      justifyContent={{ xs: "center", sm: "flex-start" }} // Center icons on mobile
-                    >
-                      <SiHtml5 size={30} color="#e44d26" title="HTML5" />
-                      <SiCss3 size={30} color="#264de4" title="CSS3" />
-                      <SiJavascript
-                        size={30}
-                        color="#f0db4f"
-                        title="JavaScript"
-                      />
-                      <SiReact size={30} color="#61dafb" title="React" />
-                      <SiPython size={30} color="#3776AB" title="Python" />
-                      <SiDjango size={30} color="#092e20" title="Django" />
-                    </Box>
-
-                    <Divider
-                      sx={{ my: 3, borderColor: "rgba(255,255,255,0.12)" }}
+                  {/* Contact Info */}
+                  <Box 
+                    sx={{ 
+                      display: "flex", 
+                      flexWrap: "wrap", 
+                      gap: 1,
+                      justifyContent: { xs: "center", md: "flex-start" }
+                    }}
+                  >
+                    <Chip
+                      icon={<LocationOn sx={{ fontSize: 16 }} />}
+                      label="Dar es Salaam"
+                      size="small"
+                      sx={{
+                        bgcolor: "rgba(33, 150, 243, 0.1)",
+                        color: "#2196f3",
+                        borderColor: "#2196f3",
+                        fontSize: "0.75rem",
+                      }}
+                      variant="outlined"
                     />
-
-                    {/* Contact Chips */}
-                    <Grid
-                      container
-                      spacing={1}
-                      justifyContent={{ xs: "center", sm: "flex-start" }}
-                    >
-                      <Grid item>
-                        <Chip
-                          icon={<LocationOn sx={{ color: "#90caf9" }} />}
-                          label="Dar-es-salaam"
-                          sx={{
-                            fontSize: { xs: 10, sm: 12 },
-                            color: "#90caf9",
-                            borderColor: "#90caf9",
-                            fontWeight: "bold",
-                            bgcolor: "rgba(144, 202, 249, 0.1)",
-                          }}
-                          variant="outlined"
-                          aria-label="Location: Dar-es-salaam"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          icon={<Phone sx={{ color: "#90caf9" }} />}
-                          label="+255 616 580 004"
-                          sx={{
-                            fontSize: { xs: 10, sm: 12 },
-                            color: "#90caf9",
-                            borderColor: "#90caf9",
-                            fontWeight: "bold",
-                            bgcolor: "rgba(144, 202, 249, 0.1)",
-                          }}
-                          variant="outlined"
-                          component="a" // Make it a clickable link
-                          href="tel:+255616580004"
-                          clickable
-                          aria-label="Phone Number: +255 616 580 004"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          icon={<Email sx={{ color: "#90caf9" }} />}
-                          label="innocrng23@example.com"
-                          sx={{
-                            color: "#90caf9",
-                            fontSize: { xs: 10, sm: 12 },
-                            borderColor: "#90caf9",
-                            fontWeight: "bold",
-                            bgcolor: "rgba(144, 202, 249, 0.1)",
-                          }}
-                          variant="outlined"
-                          component="a" // Make it a clickable link
-                          href="mailto:innocrng23@example.com"
-                          clickable
-                          aria-label="Email: innocrng23@example.com"
-                        />
-                      </Grid>
-                    </Grid>
-
-                    {/* Social Media Links */}
-                    <Box
-                      mt={3}
-                      display="flex"
-                      gap={2}
-                      justifyContent={{ xs: "center", sm: "flex-start" }}
-                    >
-                      <IconButton
-                        color="inherit"
-                        aria-label="LinkedIn profile"
-                        href="YOUR_LINKEDIN_URL"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <LinkedIn
-                          sx={{
-                            fontSize: { xs: 28, sm: 32 },
-                            color: "#0077B5",
-                          }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        color="inherit"
-                        aria-label="GitHub profile"
-                        href="YOUR_GITHUB_URL"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <GitHub
-                          sx={{
-                            fontSize: { xs: 28, sm: 32 },
-                            color: "#F0F0F0",
-                          }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        color="inherit"
-                        aria-label="Twitter profile"
-                        href="YOUR_TWITTER_URL"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Twitter
-                          sx={{
-                            fontSize: { xs: 28, sm: 32 },
-                            color: "#1DA1F2",
-                          }}
-                        />
-                      </IconButton>
-                    </Box>
+                    <Chip
+                      icon={<Phone sx={{ fontSize: 16 }} />}
+                      label="+255 616 580 004"
+                      size="small"
+                      sx={{
+                        bgcolor: "rgba(76, 175, 80, 0.1)",
+                        color: "#4caf50",
+                        borderColor: "#4caf50",
+                        fontSize: "0.75rem",
+                      }}
+                      variant="outlined"
+                    />
+                    <Chip
+                      icon={<Email sx={{ fontSize: 16 }} />}
+                      label="innocrng23@example.com"
+                      size="small"
+                      sx={{
+                        bgcolor: "rgba(255, 152, 0, 0.1)",
+                        color: "#ff9800",
+                        borderColor: "#ff9800",
+                        fontSize: "0.75rem",
+                      }}
+                      variant="outlined"
+                    />
                   </Box>
-                </Paper>
-              </Container>
-            </AnimatedSection>
-          </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </AnimatedSection>
+        </Container>
 
-          {/* Skills Section */}
-          <Box id="skills" my={{ xs: 6, md: 8 }}>
-            <AnimatedSection>
-              <Container maxWidth="lg">
-                <Paper sx={commonPaperStyles}>
-                  <Box textAlign="center" mb={3}>
-                    <SectionTitle icon={<Code />} title="Skills" />
-                  </Box>
-                  <Grid
-                    container
-                    spacing={{ xs: 2, md: 3 }}
-                    justifyContent="center"
-                  >
-                    {skills.map((skill, index) => (
-                      <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                        {" "}
-                        {/* Adjusted grid sizing */}
-                        <SkillCard skill={skill} />
-                      </Grid>
-                    ))}
+        {/* Skills Section */}
+        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+          <AnimatedSection>
+            <Paper sx={sectionStyles}>
+              <SectionTitle icon={<Code />} title="Skills" />
+              <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mt: 1 }}>
+                {skills.map((skill, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <SkillCard skill={skill} />
                   </Grid>
-                </Paper>
-              </Container>
-            </AnimatedSection>
-          </Box>
+                ))}
+              </Grid>
+            </Paper>
+          </AnimatedSection>
+        </Container>
 
-          {/* Projects Section */}
-          <Box id="projects" my={{ xs: 6, md: 8 }}>
-            <AnimatedSection>
-              <Container maxWidth="lg">
-                <Paper sx={commonPaperStyles}>
-                  <Box textAlign="center" mb={3}>
-                    <SectionTitle icon={<Work />} title="Projects" />
-                  </Box>
-                  <Grid
-                    container
-                    spacing={{ xs: 2, md: 3 }}
-                    justifyContent="center"
-                  >
-                    {projects.map((project, index) => (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <ProjectCard
-                          project={project}
-                          onClick={() => handleProjectClick(project)}
-                        />
-                      </Grid>
-                    ))}
+        {/* Projects Section */}
+        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+          <AnimatedSection>
+            <Paper sx={sectionStyles}>
+              <SectionTitle icon={<Work />} title="Projects" />
+              <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mt: 1 }}>
+                {projects.map((project, index) => (
+                  <Grid item xs={12} sm={6} lg={4} key={index}>
+                    <ProjectCard
+                      project={project}
+                      onClick={() => setSelectedProject(project)}
+                    />
                   </Grid>
-                </Paper>
-              </Container>
-            </AnimatedSection>
-          </Box>
+                ))}
+              </Grid>
+            </Paper>
+          </AnimatedSection>
+        </Container>
 
-          {/* Experience Section */}
-          <Box id="experience" my={{ xs: 6, md: 8 }}>
-            <AnimatedSection>
-              <Container maxWidth="lg">
-                <Paper sx={commonPaperStyles}>
-                  <Box textAlign="center" mb={3}>
-                    <SectionTitle icon={<Work />} title="Experience" />
-                  </Box>
-                  {experience.map((exp, index) => (
-                    <React.Fragment key={index}>
-                      <ExperienceItem experience={exp} />
-                      {index < experience.length - 1 && (
-                        <Divider
-                          sx={{
-                            my: { xs: 2, md: 3 },
-                            borderColor: "rgba(255,255,255,0.12)",
-                          }}
-                        />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </Paper>
-              </Container>
-            </AnimatedSection>
-          </Box>
+        {/* Experience Section */}
+        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+          <AnimatedSection>
+            <Paper sx={sectionStyles}>
+              <SectionTitle icon={<Work />} title="Experience" />
+              <Box sx={{ mt: 2 }}>
+                {experience.map((exp, index) => (
+                  <ExperienceItem key={index} experience={exp} />
+                ))}
+              </Box>
+            </Paper>
+          </AnimatedSection>
+        </Container>
 
-          {/* Education Section */}
-          <Box id="education" my={{ xs: 6, md: 8 }}>
-            <AnimatedSection>
-              <Container maxWidth="lg">
-                <Paper sx={commonPaperStyles}>
-                  <Box textAlign="center" mb={3}>
-                    <SectionTitle icon={<School />} title="Education" />
-                  </Box>
-                  {education.map((edu, index) => (
-                    <React.Fragment key={index}>
-                      <EducationItem education={edu} />
-                      {index < education.length - 1 && (
-                        <Divider
-                          sx={{
-                            my: { xs: 2, md: 3 },
-                            borderColor: "rgba(255,255,255,0.12)",
-                          }}
-                        />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </Paper>
-              </Container>
-            </AnimatedSection>
-          </Box>
-        </Box>
+        {/* Education Section */}
+        <Container maxWidth="lg" sx={{ mb: { xs: 4, sm: 6 } }}>
+          <AnimatedSection>
+            <Paper sx={sectionStyles}>
+              <SectionTitle icon={<School />} title="Education" />
+              <Box sx={{ mt: 2 }}>
+                {education.map((edu, index) => (
+                  <EducationItem key={index} education={edu} />
+                ))}
+              </Box>
+            </Paper>
+          </AnimatedSection>
+        </Container>
+      </Box>
 
-        <Footer />
+      <Footer />
 
-        <ContactDialog open={contactDialogOpen} onClose={handleContactClose} />
-        <ProjectDialog
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
-      </Suspense>
+      {/* Dialogs */}
+      <ContactDialog
+        open={contactDialogOpen}
+        onClose={() => setContactDialogOpen(false)}
+      />
+      <ProjectDialog
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </Box>
   );
 }

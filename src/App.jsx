@@ -1,13 +1,17 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Portfolio from "./data/portfolio/Portfolio";
+import ProjectsPage from "./data/portfolio/ProjectsPage"; 
 
 function App() {
   return (
-    <div
-      style={{ backgroundColor: "#121212", color: "#fff", minHeight: "100vh" }}
-    >
-      <Portfolio />    
-    </div>
+    <Router>
+        <Routes>
+          <Route path="/" element={<Portfolio />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+        </Routes>
+    </Router>
   );
 }
+
 export default App;

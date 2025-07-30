@@ -1,492 +1,440 @@
+// src/Portfolio.jsx (or wherever your main page component is located)
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  Grid,
   Box,
+  Typography,
   Button,
+  Stack,
+  Card,
+  CardContent,
   Chip,
+  Avatar,
   IconButton,
-  Paper,
-  useMediaQuery,
-  useTheme,
-  Fab,
-  Tooltip, // Added Tooltip for small icons
 } from "@mui/material";
-import {
-  Menu as MenuIcon,
-  Email,
-  LocationOn,
-  Phone,
-  Code,
-  Work,
-  School,
-  ArrowForward,
-  KeyboardArrowUp as KeyboardArrowUpIcon,
-  Info as InfoIcon, // Added for "Read More"
-  LightbulbOutlined as LightbulbIcon, // Skill icon
-  AppsOutlined as ProjectsIcon, // Project icon
-  WorkOutline as ExperienceIcon, // Experience icon
-  SchoolOutlined as EducationIcon, // Education icon
-} from "@mui/icons-material";
-import { Typewriter } from "react-simple-typewriter";
-import {
-  SiJavascript,
-  SiPython,
-  SiDjango,
-  SiReact,
-  SiHtml5,
-  SiCss3,
-} from "react-icons/si";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import SchoolIcon from "@mui/icons-material/School";
+import CodeIcon from "@mui/icons-material/Code";
+import DashboardIcon from "@mui/icons-material/Dashboard"; // For projects
+import PersonIcon from "@mui/icons-material/Person"; // For the main profile icon on Contact button
+import { GitHub, LinkedIn, Mail, Phone } from "@mui/icons-material"; // Example icons for contact
 
-import innocImg from "../../images/innoc.jpg";
-
-// Import your components
-import AnimatedSection from "../../components/AnimatedSection";
-import SectionTitle from "../../components/SectionTitle";
-import SkillCard from "../../components/SkillCard";
+// Import your actual data files. Adjust paths as necessary.
+// Example: if Portfolio.jsx is in 'src/', and 'experience.js' is in 'src/'
+import { experience as experiences } from "../../data/experience";
+import { education as educationData } from "../../data/education";
 import ContactDialog from "../../components/ContactDialog";
-import ProjectDialog from "../../components/ProjectDialog";
-import NavigationDrawers from "../../components/NavigationDrawers";
-import Footer from "../../components/Footer";
-import ExperienceDialog from "../../components/ExperienceDialog"; // New Dialog for Experience
-import EducationDialog from "../../components/EducationDialog"; // New Dialog for Education
+import ProjectsDialog from "./ProjectsPage"; // Adjust path to your ProjectsDialog component
+// If you have skill data and project data, import them too
+// import { skillsData } from './skillsData';
+// import { projectsData } from './projectsData';
 
-// Import your data
-// import { skills } from "../skills";
-import { experience } from "../experience";
-import { education } from "../education";
+// Import the content components (using the new names for clarity, adjust if you prefer old ones)
+import ExperienceContent from "../../components/ExperienceDialog"; // Adjust path
+import EducationContent from "../../components/EducationDialog"; // Adjust path
+// You'll need to create these if you want skills/projects in the right panel
+// import SkillsContent from './components/SkillsContent';
+// import ProjectsContent from './components/ProjectsContent';
 
-export default function Portfolio() {
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
-  const [leftNavOpen, setLeftNavOpen] = useState(false);
-  const [experienceDialogOpen, setExperienceDialogOpen] = useState(false); // State for Experience Dialog
-  const [educationDialogOpen, setEducationDialogOpen] = useState(false); // State for Education Dialog
+// Placeholder for profile image - replace with your actual image path
+import profileImage from "../../images/innoc.jpg"; // Adjust path to your image
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+const Portfolio = () => {
+  const [openContact, setOpenContact] = useState(false);
+  const [openProjects, setOpenProjects] = useState(false);
+  // State to manage which content is displayed in the right panel
+  const [activeRightPanelContent, setActiveRightPanelContent] =
+    useState("experience");
 
-  const sectionStyles = {
-    p: { xs: 1.5, sm: 2 }, // Further reduced padding
-    bgcolor: "#1a1a1a",
-    borderRadius: { xs: 1, sm: 2 }, // Smaller border radius
-    boxShadow: "0 4px 18px rgba(0,0,0,0.3)", // Adjusted shadow
-    color: "#ffffff",
-    border: "0.5px solid rgba(255,255,255,0.06)", // Even thinner border
-    transition: "all 0.2s ease-in-out", // Faster transition
-    "&:hover": {
-      transform: "translateY(-0.5px)", // Subtle lift
-      boxShadow: "0 8px 30px rgba(0,0,0,0.4)", // Adjusted hover shadow
-      borderColor: "rgba(255,255,255,0.1)",
-    },
-  };
-
-  // Scroll to top function (kept for consistency, though less critical with single page)
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+  // Function to determine which component to render in the right panel
+  const renderRightPanelContent = () => {
+    switch (activeRightPanelContent) {
+      case "experience":
+        return <ExperienceContent experience={experiences} />;
+      case "education":
+        return <EducationContent education={educationData} />;
+      // Add cases for other content if you have them, e.g.:
+      // case 'skills':
+      //   return <SkillsContent skills={skillsData} />;
+      // case 'projects':
+      //   return <ProjectsContent projects={projectsData} />;
+      default:
+        return (
+          <Box sx={{ p: 3, textAlign: "center" }}>
+            <Typography variant="h6" sx={{ color: "text.secondary" }}>
+              Select an option to view details here.
+            </Typography>
+          </Box>
+        );
+    }
   };
 
   return (
     <Box
       sx={{
-        bgcolor: "#0a0a0a",
-        minHeight: "100vh",
-        color: "white",
-        position: "relative",
-        overflow: "hidden", // Crucial for single-page, no-scroll
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between", // Distribute content vertically
-        // Subtle background pattern/gradient
-        background: `radial-gradient(circle at top left, rgba(33, 150, 243, 0.04) 0%, transparent 35%),
-                     radial-gradient(circle at bottom right, rgba(76, 175, 80, 0.04) 0%, transparent 35%),
-                     #0a0a0a`,
+        minHeight: "100vh",
+        bgcolor: "#0a0a0a", // Dark background
+        color: "white",
+        fontFamily: "Roboto, sans-serif",
       }}
     >
-      {/* Navigation */}
-      <AppBar
-        position="fixed"
-        sx={{
-          bgcolor: "rgba(10, 10, 10, 0.9)", // Darker, less transparent AppBar
-          backdropFilter: "blur(10px)", // Slightly less blur for performance
-          boxShadow: "0 1px 8px rgba(0,0,0,0.4)", // Reduced shadow
-          height: { xs: '56px', sm: '64px' } // Explicitly set height
-        }}
-      >
-        <Toolbar variant="dense" sx={{ minHeight: 'inherit' }}> {/* Dense toolbar for more compact size */}
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={() => setLeftNavOpen(true)}
-            sx={{ mr: 1 }} // Reduced margin
+      {/* Left/Main Content Area */}
+      <Box sx={{ flexGrow: 1, p: 4, maxWidth: "calc(100% - 400px)" }}>
+        {" "}
+        {/* Allocate space for right panel */}
+        {/* Header (Top Left Logo and Top Right Contact) - as seen in your image */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "#6200EE" }}
           >
-            <MenuIcon sx={{ fontSize: '1.25rem' }} /> {/* Smaller icon */}
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-            I. Lutumo
+            = Innocent Felix Lutumo
           </Typography>
           <Button
-            color="inherit"
-            onClick={() => setContactDialogOpen(true)}
+            variant="outlined"
+            startIcon={<Mail />}
+            onClick={() => setOpenContact(!openContact)}
             sx={{
-              fontWeight: 600,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' }, // Smaller font size
-              minWidth: { xs: '70px', sm: 'unset' }, // Adjust button width
-              px: { xs: 1.5, sm: 2 }, // Reduced padding
-              py: { xs: 0.5, sm: 0.75 },
-              "&:hover": { bgcolor: "rgba(255,255,255,0.06)" },
+              color: "#03DAC6",
+              borderColor: "#03DAC6",
+              "&:hover": {
+                bgcolor: "rgba(3,218,198,0.1)",
+                borderColor: "#03DAC6",
+              },
             }}
           >
-            Contact
+            CONTACT
           </Button>
-        </Toolbar>
-      </AppBar>
-
-      <NavigationDrawers
-        leftNavOpen={leftNavOpen}
-        setLeftNavOpen={setLeftNavOpen}
-        isMobile={isMobile}
-        setContactDialogOpen={setContactDialogOpen}
-        // Added dialog handlers for navigation
-        setExperienceDialogOpen={setExperienceDialogOpen}
-        setEducationDialogOpen={setEducationDialogOpen}
-        setSelectedProject={setSelectedProject} // Pass setSelectedProject
-      />
-
-      {/* Main Content - Centralized and Compact */}
-      <Box
-        component="main"
-        sx={{
-          pt: { xs: '64px', sm: '72px' }, // Adjust padding based on AppBar height
-          px: { xs: 1, sm: 1.5 }, // Reduced horizontal padding
-          flexGrow: 1, // Allow main content to grow
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center', // Center content vertically
-          alignItems: 'center',
-          pb: { xs: '64px', sm: '72px' }, // Padding for footer
-        }}
-      >
-        {/* Hero/About Section */}
-        <Container maxWidth="md" sx={{ mb: { xs: 2, sm: 3 }, width: '100%' }}>
-          <AnimatedSection>
-            <Paper
+        </Box>
+        {/* Profile Card */}
+        <Card
+          sx={{
+            bgcolor: "#1a1a1a",
+            color: "white",
+            borderRadius: 2,
+            p: 3,
+            mb: 4,
+          }}
+        >
+          <CardContent sx={{ display: "flex", alignItems: "center" }}>
+            <Avatar
+              src={profileImage}
               sx={{
-                ...sectionStyles,
-                px: { xs: 1.5, md: 3 },
-                py: { xs: 2, md: 3 },
-                background:
-                  "linear-gradient(135deg, rgba(26, 26, 26, 0.85), rgba(10, 10, 10, 0.9))",
-                overflow: "hidden",
+                width: 120,
+                height: 120,
+                mr: 3,
+                border: "2px solid #6200EE",
               }}
-            >
-              <Box
+            />
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+                Web Developer & UI/UX Designer
+              </Typography>
+              <Typography variant="body1" sx={{ color: "white", mb: 2 }}>
+                Passionate full-stack developer dedicated to building elegant,
+                scalable digital solutions with a focus on clean UI/UX.
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                <Chip
+                  label="HTML5"
+                  sx={{ bgcolor: "#E34F26", color: "white" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/color/48/000000/html-5--v1.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+                <Chip
+                  label="CSS3"
+                  sx={{ bgcolor: "#1572B6", color: "white" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/color/48/000000/css3.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+                <Chip
+                  label="JS"
+                  sx={{ bgcolor: "#F7DF1E", color: "black" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/color/48/000000/javascript--v1.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+                <Chip
+                  label="React"
+                  sx={{ bgcolor: "#61DAFB", color: "black" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/color/48/000000/react-native.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+
+                <Chip
+                  label="Python"
+                  sx={{ bgcolor: "#3776AB", color: "white" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/color/48/000000/python--v1.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+                <Chip
+                  label="Django"
+                  sx={{ bgcolor: "#092E20", color: "white" }}
+                  icon={
+                    <Box
+                      component="img"
+                      src="https://img.icons8.com/ios-filled/50/ffffff/django.png"
+                      sx={{ width: 16, height: 16 }}
+                    />
+                  }
+                />
+              </Stack>
+              <Stack direction="row" spacing={1} flexWrap="wrap">
+                <Chip
+                  label="Dar es Salaam"
+                  icon={<PersonIcon />}
+                  sx={{ bgcolor: "#333", color: "white" }}
+                />
+                <Chip
+                  label="+255 616 580 094"
+                  icon={<Phone />}
+                  sx={{ bgcolor: "#333", color: "white" }}
+                />
+                <Chip
+                  label="innocmg23@example.com"
+                  icon={<Mail />}
+                  sx={{ bgcolor: "#333", color: "white" }}
+                />
+              </Stack>
+            </Box>
+          </CardContent>
+        </Card>
+        {/* Skills and Projects Cards */}
+        <Stack direction="row" spacing={3} sx={{ mb: 4 }}>
+          <Card
+            sx={{
+              flex: 1,
+              bgcolor: "#1a1a1a",
+              color: "white",
+              borderRadius: 2,
+              p: 2,
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Core competencies and tools I use.
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<CodeIcon />}
+                onClick={() => setActiveRightPanelContent("skills")}
                 sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
-                  alignItems: { xs: "center", sm: "flex-start" },
-                  gap: { xs: 2, sm: 3 },
+                  bgcolor: "#6200EE",
+                  "&:hover": { bgcolor: "#4B00B2" },
+                  color: "white",
                 }}
               >
-                <Box
-                  sx={{
-                    flexShrink: 0,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={innocImg}
-                    alt="Innocent Felix Lutumo"
-                    sx={{
-                      width: { xs: 120, sm: 150 }, // Significantly smaller image
-                      height: { xs: 120, sm: 150 },
-                      borderRadius: 2,
-                      border: "2px solid rgba(255,255,255,0.1)",
-                      objectFit: "cover",
-                      boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
-                  <Typography
-                    variant={isMobile ? "h6" : "h5"} // Smaller variant for mobile and desktop
-                    fontWeight="bold"
-                    gutterBottom
-                    sx={{ mb: 1 }}
-                  >
-                    <Typewriter
-                      words={["Innocent Felix Lutumo", "Web Developer", "UI/UX Designer"]}
-                      loop
-                      cursor
-                      cursorStyle="|" // Simpler cursor
-                      typeSpeed={70}
-                      deleteSpeed={50}
-                      delaySpeed={1500}
-                    />
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mb: 1.5,
-                      lineHeight: 1.6,
-                      color: "rgba(255,255,255,0.8)",
-                      fontSize: { xs: "0.85rem", sm: "0.9rem" }, // Smaller body text
-                      maxWidth: { xs: "90%", sm: "none" },
-                      mx: { xs: "auto", sm: "unset" },
-                    }}
-                  >
-                    Passionate full-stack developer dedicated to building elegant, scalable digital solutions with a focus on clean UI/UX.
-                  </Typography>
-
-                  {/* Tech Stack Icons - More compact and fewer visible */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 1, // Further reduced gap
-                      mb: 1.5,
-                      flexWrap: "wrap",
-                      justifyContent: { xs: "center", sm: "flex-start" },
-                    }}
-                  >
-                    <Tooltip title="HTML5"><SiHtml5 size={22} color="#e44d26" /></Tooltip>
-                    <Tooltip title="CSS3"><SiCss3 size={22} color="#264de4" /></Tooltip>
-                    <Tooltip title="JavaScript"><SiJavascript size={22} color="#f0db4f" /></Tooltip>
-                    <Tooltip title="React"><SiReact size={22} color="#61dafb" /></Tooltip>
-                    <Tooltip title="Python"><SiPython size={22} color="#3776AB" /></Tooltip>
-                    <Tooltip title="Django"><SiDjango size={22} color="#092e20" /></Tooltip>
-                  </Box>
-
-                  {/* Contact Info - Compact chips */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 0.5, // Even smaller gap
-                      justifyContent: { xs: "center", sm: "flex-start" },
-                    }}
-                  >
-                    <Chip
-                      icon={<LocationOn sx={{ fontSize: 12 }} />} // Tiny icon
-                      label="Dar es Salaam"
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(33, 150, 243, 0.1)", color: "#2196f3", fontSize: "0.7rem", height: 22,
-                        "& .MuiChip-label": { px: "4px" }
-                      }}
-                      variant="outlined"
-                    />
-                    <Chip
-                      icon={<Phone sx={{ fontSize: 12 }} />}
-                      label="+255 616 580 004"
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(76, 175, 80, 0.1)", color: "#4caf50", fontSize: "0.7rem", height: 22,
-                        "& .MuiChip-label": { px: "4px" }
-                      }}
-                      variant="outlined"
-                    />
-                    <Chip
-                      icon={<Email sx={{ fontSize: 12 }} />}
-                      label="innocrng23@example.com"
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(255, 152, 0, 0.1)", color: "#ff9800", fontSize: "0.7rem", height: 22,
-                        "& .MuiChip-label": { px: "4px" }
-                      }}
-                      variant="outlined"
-                    />
-                  </Box>
-                </Box>
-              </Box>
-            </Paper>
-          </AnimatedSection>
-        </Container>
-
-        <Container maxWidth="md" sx={{ width: '100%', mb: { xs: 2, sm: 3 } }}>
-          <AnimatedSection>
-            <Grid container spacing={2} alignItems="stretch"> {/* Reduced spacing */}
-              {/* Skills Section (Left) - More compact with "View All" dialog trigger */}
-              <Grid item xs={12} sm={6} sx={{ display: "flex" }}>
-                <Paper
-                  sx={{
-                    ...sectionStyles,
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.04)",
-                  }}
-                >
-                  <SectionTitle icon={<LightbulbIcon sx={{ fontSize: 24 }} />} title="My Skills" sx={{ mb: 1 }} />
-                  <Typography variant="body2" sx={{ mb: 1.5, textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
-                    Core competencies and tools I use.
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    onClick={() => setLeftNavOpen(true)} // Re-purpose nav for full skill view
-                    size="small"
-                    startIcon={<InfoIcon />}
-                    sx={{
-                      bgcolor: "#2196F3",
-                      "&:hover": { bgcolor: "#1976D2" },
-                      fontSize: '0.75rem', py: 0.7, px: 2,
-                    }}
-                  >
-                    View All Skills
-                  </Button>
-                </Paper>
-              </Grid>
-
-              {/* Projects Section (Right) - Streamlined with "View Gallery" dialog trigger */}
-              <Grid item xs={12} sm={6} sx={{ display: "flex" }}>
-                <Paper
-                  sx={{
-                    ...sectionStyles,
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.02)",
-                    "&:before": { height: 2 }, // Thinner top bar
-                  }}
-                >
-                  <SectionTitle icon={<ProjectsIcon sx={{ fontSize: 24 }} />} title="My Projects" sx={{ mb: 1 }} />
-                  <Typography variant="body2" sx={{ mb: 1.5, textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
-                    Showcasing my professional work.
-                  </Typography>
-                  <Button
-                    component={Link}
-                    to="/projects" // Keep direct link for gallery, but if it needs to be a dialog, change this
-                    variant="contained"
-                    size="small"
-                    startIcon={<ArrowForward />}
-                    sx={{
-                      bgcolor: "#4CAF50",
-                      "&:hover": { bgcolor: "#388E3C" },
-                      fontSize: '0.75rem', py: 0.7, px: 2,
-                    }}
-                  >
-                    View Projects
-                  </Button>
-                </Paper>
-              </Grid>
-            </Grid>
-          </AnimatedSection>
-        </Container>
-
-        {/* Experience & Education Section - Combined and Dialog-driven */}
-        <Container maxWidth="md" sx={{ width: '100%' }}>
-          <AnimatedSection>
-            <Paper
+                VIEW ALL SKILLS
+              </Button>
+            </CardContent>
+          </Card>
+          <Card
+            sx={{
+              flex: 1,
+              bgcolor: "#1a1a1a",
+              color: "white",
+              borderRadius: 2,
+              p: 2,
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Showcasing my professional work.
+              </Typography>
+              <Button
+                onClick={() => setOpenProjects(true)}
+                variant="contained"
+                startIcon={<DashboardIcon />}
+                sx={{
+                  bgcolor: "#03DAC6",
+                  "&:hover": { bgcolor: "#02B8A2" },
+                  color: "black",
+                }}
+              >
+                VIEW PROJECTS
+              </Button>
+            </CardContent>
+          </Card>
+        </Stack>
+        {/* Professional Journey Section (Experience and Education Buttons) */}
+        <Card
+          sx={{
+            bgcolor: "#1a1a1a",
+            color: "white",
+            borderRadius: 2,
+            p: 3,
+            mb: 4,
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+            Professional Journey
+          </Typography>
+          <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+            <Button
+              variant={
+                activeRightPanelContent === "experience"
+                  ? "contained"
+                  : "outlined"
+              }
+              startIcon={<BusinessCenterIcon />}
+              onClick={() => setActiveRightPanelContent("experience")}
               sx={{
-                ...sectionStyles,
-                background: "linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(10, 10, 10, 0.85))",
-                p: { xs: 1.5, sm: 2.5 },
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
+                bgcolor:
+                  activeRightPanelContent === "experience"
+                    ? "#6200EE"
+                    : "transparent",
+                color:
+                  activeRightPanelContent === "experience"
+                    ? "white"
+                    : "#6200EE",
+                borderColor: "#6200EE",
+                "&:hover": {
+                  bgcolor:
+                    activeRightPanelContent === "experience"
+                      ? "#4B00B2"
+                      : "rgba(98,0,238,0.1)",
+                  borderColor: "#4B00B2",
+                },
               }}
             >
-              <Typography variant="h6" fontWeight="bold" sx={{ mb: 1.5, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Professional Journey
-              </Typography>
-              <Grid container spacing={2} sx={{ width: '100%' }}>
-                <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={<ExperienceIcon />}
-                    onClick={() => setExperienceDialogOpen(true)}
-                    sx={{
-                      fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 1, sm: 1.2 }, px: 1.5,
-                      borderColor: 'rgba(255,255,255,0.15)', color: 'white',
-                      '&:hover': { borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.05)' }
-                    }}
-                  >
-                    View Experience
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={<EducationIcon />}
-                    onClick={() => setEducationDialogOpen(true)}
-                    sx={{
-                      fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 1, sm: 1.2 }, px: 1.5,
-                      borderColor: 'rgba(255,255,255,0.15)', color: 'white',
-                      '&:hover': { borderColor: '#4CAF50', backgroundColor: 'rgba(76, 175, 80, 0.05)' }
-                    }}
-                  >
-                    View Education
-                  </Button>
-                </Grid>
-              </Grid>
-              <Typography variant="caption" sx={{ mt: 1.5, color: "rgba(255,255,255,0.6)", fontSize: "0.7rem", textAlign: 'center' }}>
-                Click to explore detailed work history and academic background.
-              </Typography>
-            </Paper>
-          </AnimatedSection>
-        </Container>
+              VIEW EXPERIENCE
+            </Button>
+            <Button
+              variant={
+                activeRightPanelContent === "education"
+                  ? "contained"
+                  : "outlined"
+              }
+              startIcon={<SchoolIcon />}
+              onClick={() => setActiveRightPanelContent("education")}
+              sx={{
+                bgcolor:
+                  activeRightPanelContent === "education"
+                    ? "#03DAC6"
+                    : "transparent",
+                color:
+                  activeRightPanelContent === "education" ? "black" : "#03DAC6",
+                borderColor: "#03DAC6",
+                "&:hover": {
+                  bgcolor:
+                    activeRightPanelContent === "education"
+                      ? "#02B8A2"
+                      : "rgba(3,218,198,0.1)",
+                  borderColor: "#02B8A2",
+                },
+              }}
+            >
+              VIEW EDUCATION
+            </Button>
+          </Stack>
+          <Typography variant="body2" sx={{ color: "white" }}>
+            Click to explore detailed work history and academic background
+          </Typography>
+        </Card>
+        {/* Social Media/Contact Footer (Example) */}
+        <Box sx={{ textAlign: "center", mt: 4 }}>
+          <IconButton
+            href="https://github.com/Innocent-Lutumo/"
+            target="_blank"
+            sx={{ color: "white", mx: 1 }}
+          >
+            <GitHub fontSize="large" />
+          </IconButton>
+          <IconButton
+            href="https://www.linkedin.com/in/innocent-lutumo-56969b35b/"
+            target="_blank"
+            sx={{ color: "white", mx: 1 }}
+          >
+            <LinkedIn fontSize="large" />
+          </IconButton>
+          {/* Add more social icons */}
+          <Typography
+            variant="caption"
+            sx={{ display: "block", mt: 2, color: "white" }}
+          >
+            © {new Date().getFullYear()} Innocent Lutumo. All rights reserved.
+          </Typography>
+        </Box>
       </Box>
 
-      <Footer sx={{ py: { xs: 1.5, sm: 2 }, mt: 'auto', textAlign: 'center', fontSize: '0.75rem' }} /> {/* Compact Footer */}
+      {/* Contact Dialog Component */}
+      <ContactDialog open={openContact} onClose={() => setOpenContact(false)} />
 
-      {/* Scroll to Top Button (retained for slight upward adjustment if needed) */}
-      <Fab
-        color="primary"
-        size="small"
-        aria-label="scroll back to top"
-        onClick={scrollToTop}
+      {/* Projects Dialog Component */}
+      <ProjectsDialog
+        open={openProjects}
+        handleClose={() => setOpenProjects(false)}
+      />
+
+      {/* Right-Hand Dynamic Content Panel */}
+      <Box
         sx={{
-          position: "fixed",
-          bottom: { xs: 10, sm: 16 },
-          right: { xs: 10, sm: 16 },
-          bgcolor: "rgba(33, 150, 243, 0.7)", // More transparent
-          backdropFilter: "blur(3px)", // Less blur
-          boxShadow: "0 2px 8px rgba(33, 150, 243, 0.3)", // Reduced shadow
-          "&:hover": { bgcolor: "#2196F3", boxShadow: "0 4px 12px rgba(33, 150, 243, 0.5)" },
-          transition: "all 0.2s ease-in-out",
-          zIndex: 999,
+          width: "400px", // Fixed width for the dynamic panel
+          flexShrink: 0, // Prevent it from shrinking
+          bgcolor: "#121212", // A slightly different dark background for the panel
+          boxShadow: "-4px 0 10px rgba(0,0,0,0.5)", // Optional shadow for visual separation
+          overflowY: "auto", // Enable vertical scrolling if content overflows
+          p: 2, // Padding inside the panel
+          borderLeft: "1px solid rgba(255,255,255,0.1)", // Subtle border
         }}
       >
-        <KeyboardArrowUpIcon sx={{ fontSize: '1.25rem' }} /> {/* Smaller icon */}
-      </Fab>
+        {renderRightPanelContent()}
+      </Box>
 
-      {/* Dialogs */}
-      <ContactDialog
-        open={contactDialogOpen}
-        onClose={() => setContactDialogOpen(false)}
-      />
-      <ProjectDialog
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
-      {/* New Dialogs for Experience and Education */}
-      <ExperienceDialog
-        open={experienceDialogOpen}
-        onClose={() => setExperienceDialogOpen(false)}
-        experience={experience} // Pass all experience data to the dialog
-      />
-      <EducationDialog
-        open={educationDialogOpen}
-        onClose={() => setEducationDialogOpen(false)}
-        education={education} // Pass all education data to the dialog
-      />
+      {/* Scroll to Top Button (from your image) */}
+      <IconButton
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          bgcolor: "#6200EE",
+          color: "white",
+          "&:hover": { bgcolor: "#4B00B2" },
+          zIndex: 999,
+        }}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      >
+        <Typography variant="caption" sx={{ transform: "rotate(-90deg)" }}>
+          ^
+        </Typography>
+        <Typography variant="caption" sx={{ transform: "rotate(-90deg)" }}>
+          ^
+        </Typography>
+      </IconButton>
     </Box>
   );
-}
+};
+
+export default Portfolio;

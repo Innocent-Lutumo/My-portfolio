@@ -1,37 +1,30 @@
 // src/components/ExperienceDialog.jsx
 import React from 'react';
-import { Drawer, Box, IconButton, Typography } from '@mui/material'; // Import Drawer
-import CloseIcon from '@mui/icons-material/Close';
-import ExperienceItem from './ExperienceItem';
+import { Box, Typography, Divider } from '@mui/material';
+import ExperienceItem from './ExperienceItem'; // Make sure this path is correct relative to ExperienceDialog.jsx
 
-export default function ExperienceDialog({ open, onClose, experience }) {
-  return (
-    <Drawer
-      anchor="right" // This is the key: opens from the right
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: '400px', // Set a fixed width for the drawer
-          boxSizing: 'border-box',
-          bgcolor: '#0a0a0a', // Apply your background color
-          color: 'white',
-        },
-      }}
-    >
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#1a1a1a' }}>
-        <Typography variant="h6" component="div" sx={{ color: 'white' }}>
-          My Professional Experience
-        </Typography>
-        <IconButton onClick={onClose} sx={{ color: 'white' }}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
+// This component now receives the 'experience' data array as a prop
+// It no longer functions as a Material-UI Dialog
+export default function ExperienceDialog({ experience }) {
+  if (!experience || !Array.isArray(experience) || experience.length === 0) {
+    return (
       <Box sx={{ p: 2 }}>
-        {experience.map((exp, index) => (
-          <ExperienceItem key={index} experience={exp} compact={false} />
-        ))}
+        <Typography variant="h6" sx={{ color: 'text.secondary' }}>No experience data available.</Typography>
       </Box>
-    </Drawer>
+    );
+  }
+
+  return (
+    <Box sx={{ p: 2 }}> {/* Added padding for overall content */}
+      <Typography variant="h5" sx={{ mb: 3, color: 'white', fontWeight: 'bold' }}>Professional Experience</Typography>
+      {experience.map((exp, index) => (
+        <React.Fragment key={index}>
+          <ExperienceItem experience={exp} compact={false} /> {/* Assuming compact=false for full details */}
+          {index < experience.length - 1 && (
+            <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.1)' }} /> // Add a divider between items
+          )}
+        </React.Fragment>
+      ))}
+    </Box>
   );
 }

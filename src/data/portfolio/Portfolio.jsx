@@ -13,7 +13,8 @@ import {
   Paper,
   useMediaQuery,
   useTheme,
-  Fab, // Added for scroll-to-top
+  Fab,
+  Tooltip, // Added Tooltip for small icons
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -24,7 +25,12 @@ import {
   Work,
   School,
   ArrowForward,
-  KeyboardArrowUp as KeyboardArrowUpIcon, // Added for scroll-to-top
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  Info as InfoIcon, // Added for "Read More"
+  LightbulbOutlined as LightbulbIcon, // Skill icon
+  AppsOutlined as ProjectsIcon, // Project icon
+  WorkOutline as ExperienceIcon, // Experience icon
+  SchoolOutlined as EducationIcon, // Education icon
 } from "@mui/icons-material";
 import { Typewriter } from "react-simple-typewriter";
 import {
@@ -41,17 +47,16 @@ import innocImg from "../../images/innoc.jpg";
 // Import your components
 import AnimatedSection from "../../components/AnimatedSection";
 import SectionTitle from "../../components/SectionTitle";
-// import ProjectCard from "../../components/ProjectCard"; // Not directly used in this file's render
-import ExperienceItem from "../../components/ExperienceItem";
-import EducationItem from "../../components/EducationItem";
 import SkillCard from "../../components/SkillCard";
 import ContactDialog from "../../components/ContactDialog";
 import ProjectDialog from "../../components/ProjectDialog";
 import NavigationDrawers from "../../components/NavigationDrawers";
 import Footer from "../../components/Footer";
+import ExperienceDialog from "../../components/ExperienceDialog"; // New Dialog for Experience
+import EducationDialog from "../../components/EducationDialog"; // New Dialog for Education
 
 // Import your data
-import { skills } from "../skills";
+// import { skills } from "../skills";
 import { experience } from "../experience";
 import { education } from "../education";
 
@@ -59,28 +64,28 @@ export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [leftNavOpen, setLeftNavOpen] = useState(false);
-  const [rightNavOpen, setRightNavOpen] = useState(false); // Assuming you might have a right nav
+  const [experienceDialogOpen, setExperienceDialogOpen] = useState(false); // State for Experience Dialog
+  const [educationDialogOpen, setEducationDialogOpen] = useState(false); // State for Education Dialog
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // Improved and more compact section styles
   const sectionStyles = {
-    p: { xs: 2, sm: 3 }, // Reduced padding
+    p: { xs: 1.5, sm: 2 }, // Further reduced padding
     bgcolor: "#1a1a1a",
-    borderRadius: { xs: 1.5, sm: 2.5 }, // Slightly smaller border radius
-    boxShadow: "0 6px 24px rgba(0,0,0,0.4)", // Adjusted shadow
+    borderRadius: { xs: 1, sm: 2 }, // Smaller border radius
+    boxShadow: "0 4px 18px rgba(0,0,0,0.3)", // Adjusted shadow
     color: "#ffffff",
-    border: "1px solid rgba(255,255,255,0.08)", // Thinner border
-    transition: "all 0.3s ease-in-out",
+    border: "0.5px solid rgba(255,255,255,0.06)", // Even thinner border
+    transition: "all 0.2s ease-in-out", // Faster transition
     "&:hover": {
-      transform: "translateY(-1px)", // Less aggressive lift
-      boxShadow: "0 10px 36px rgba(0,0,0,0.5)", // Adjusted hover shadow
-      borderColor: "rgba(255,255,255,0.15)",
+      transform: "translateY(-0.5px)", // Subtle lift
+      boxShadow: "0 8px 30px rgba(0,0,0,0.4)", // Adjusted hover shadow
+      borderColor: "rgba(255,255,255,0.1)",
     },
   };
 
-  // Scroll to top function
+  // Scroll to top function (kept for consistency, though less critical with single page)
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -95,10 +100,13 @@ export default function Portfolio() {
         minHeight: "100vh",
         color: "white",
         position: "relative",
-        overflowX: "hidden",
-        // Subtle background pattern/gradient for stunning effect
-        background: `radial-gradient(circle at top left, rgba(33, 150, 243, 0.05) 0%, transparent 40%),
-                     radial-gradient(circle at bottom right, rgba(76, 175, 80, 0.05) 0%, transparent 40%),
+        overflow: "hidden", // Crucial for single-page, no-scroll
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between", // Distribute content vertically
+        // Subtle background pattern/gradient
+        background: `radial-gradient(circle at top left, rgba(33, 150, 243, 0.04) 0%, transparent 35%),
+                     radial-gradient(circle at bottom right, rgba(76, 175, 80, 0.04) 0%, transparent 35%),
                      #0a0a0a`,
       }}
     >
@@ -106,31 +114,34 @@ export default function Portfolio() {
       <AppBar
         position="fixed"
         sx={{
-          bgcolor: "rgba(10, 10, 10, 0.8)", // Darker, slightly more transparent AppBar
-          backdropFilter: "blur(12px)", // Increased blur
-          boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
+          bgcolor: "rgba(10, 10, 10, 0.9)", // Darker, less transparent AppBar
+          backdropFilter: "blur(10px)", // Slightly less blur for performance
+          boxShadow: "0 1px 8px rgba(0,0,0,0.4)", // Reduced shadow
+          height: { xs: '56px', sm: '64px' } // Explicitly set height
         }}
       >
-        <Toolbar>
+        <Toolbar variant="dense" sx={{ minHeight: 'inherit' }}> {/* Dense toolbar for more compact size */}
           <IconButton
             color="inherit"
             edge="start"
             onClick={() => setLeftNavOpen(true)}
-            sx={{ mr: 2 }}
+            sx={{ mr: 1 }} // Reduced margin
           >
-            <MenuIcon />
+            <MenuIcon sx={{ fontSize: '1.25rem' }} /> {/* Smaller icon */}
           </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            Innocent Lutumo
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+            I. Lutumo
           </Typography>
           <Button
             color="inherit"
             onClick={() => setContactDialogOpen(true)}
             sx={{
               fontWeight: 600,
-              "&:hover": {
-                bgcolor: "rgba(255,255,255,0.08)",
-              },
+              fontSize: { xs: '0.75rem', sm: '0.875rem' }, // Smaller font size
+              minWidth: { xs: '70px', sm: 'unset' }, // Adjust button width
+              px: { xs: 1.5, sm: 2 }, // Reduced padding
+              py: { xs: 0.5, sm: 0.75 },
+              "&:hover": { bgcolor: "rgba(255,255,255,0.06)" },
             }}
           >
             Contact
@@ -140,47 +151,55 @@ export default function Portfolio() {
 
       <NavigationDrawers
         leftNavOpen={leftNavOpen}
-        rightNavOpen={rightNavOpen}
         setLeftNavOpen={setLeftNavOpen}
-        setRightNavOpen={setRightNavOpen}
         isMobile={isMobile}
         setContactDialogOpen={setContactDialogOpen}
+        // Added dialog handlers for navigation
+        setExperienceDialogOpen={setExperienceDialogOpen}
+        setEducationDialogOpen={setEducationDialogOpen}
+        setSelectedProject={setSelectedProject} // Pass setSelectedProject
       />
 
-      {/* Main Content */}
+      {/* Main Content - Centralized and Compact */}
       <Box
         component="main"
-        sx={{ pt: { xs: 8, sm: 10 }, px: { xs: 1, sm: 2 } }} // Reduced top padding
+        sx={{
+          pt: { xs: '64px', sm: '72px' }, // Adjust padding based on AppBar height
+          px: { xs: 1, sm: 1.5 }, // Reduced horizontal padding
+          flexGrow: 1, // Allow main content to grow
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center', // Center content vertically
+          alignItems: 'center',
+          pb: { xs: '64px', sm: '72px' }, // Padding for footer
+        }}
       >
         {/* Hero/About Section */}
-        <Container maxWidth="xl" sx={{ mb: { xs: 3, sm: 5 } }}>
-          {" "}
-          {/* Reduced margin-bottom */}
+        <Container maxWidth="md" sx={{ mb: { xs: 2, sm: 3 }, width: '100%' }}>
           <AnimatedSection>
             <Paper
               sx={{
                 ...sectionStyles,
-                px: { xs: 2, md: 4 }, // Reduced horizontal padding
-                py: { xs: 2.5, md: 4 }, // Reduced vertical padding
+                px: { xs: 1.5, md: 3 },
+                py: { xs: 2, md: 3 },
                 background:
-                  "linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(10, 10, 10, 0.95))",
-                overflow: "hidden", // Ensures content stays within bounds
+                  "linear-gradient(135deg, rgba(26, 26, 26, 0.85), rgba(10, 10, 10, 0.9))",
+                overflow: "hidden",
               }}
             >
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  alignItems: { xs: "center", md: "flex-start" },
-                  gap: { xs: 3, md: 5 }, // Reduced gap
+                  flexDirection: { xs: "column", sm: "row" },
+                  alignItems: { xs: "center", sm: "flex-start" },
+                  gap: { xs: 2, sm: 3 },
                 }}
               >
-                {/* Image Section - Floated Left */}
                 <Box
                   sx={{
                     flexShrink: 0,
                     display: "flex",
-                    justifyContent: { xs: "center", md: "flex-start" },
+                    justifyContent: "center",
                   }}
                 >
                   <Box
@@ -188,122 +207,102 @@ export default function Portfolio() {
                     src={innocImg}
                     alt="Innocent Felix Lutumo"
                     sx={{
-                      width: { xs: 180, sm: 240, md: 280 }, // Smaller image size
-                      height: { xs: 180, sm: 240, md: 280 }, // Smaller image size
-                      borderRadius: 3, // Slightly smaller border radius
-                      border: "3px solid rgba(255,255,255,0.15)", // Thinner border
+                      width: { xs: 120, sm: 150 }, // Significantly smaller image
+                      height: { xs: 120, sm: 150 },
+                      borderRadius: 2,
+                      border: "2px solid rgba(255,255,255,0.1)",
                       objectFit: "cover",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.6)", // Adjusted shadow
-                      transform: "translateZ(0)", // Optimize for potential parallax
+                      boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
                     }}
                   />
                 </Box>
 
-                {/* Text Section - Floated Right of Image */}
-                <Box sx={{ flex: 1, textAlign: { xs: "center", md: "left" } }}>
+                <Box sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
                   <Typography
-                    variant={isMobile ? "h6" : "h4"} // Smaller variant for mobile
+                    variant={isMobile ? "h6" : "h5"} // Smaller variant for mobile and desktop
                     fontWeight="bold"
                     gutterBottom
-                    sx={{ mb: 1.5 }} // Reduced margin-bottom
+                    sx={{ mb: 1 }}
                   >
                     <Typewriter
-                      words={[
-                        "I'm Innocent Felix Lutumo",
-                        "I'm a Web Developer",
-                        "I'm a UI/UX Designer",
-                      ]}
+                      words={["Innocent Felix Lutumo", "Web Developer", "UI/UX Designer"]}
                       loop
                       cursor
-                      cursorStyle="_" // More subtle cursor
-                      typeSpeed={60} // Slightly faster
-                      deleteSpeed={40} // Slightly faster
-                      delaySpeed={1800} // Slightly longer delay
+                      cursorStyle="|" // Simpler cursor
+                      typeSpeed={70}
+                      deleteSpeed={50}
+                      delaySpeed={1500}
                     />
                   </Typography>
 
-                  {/* Text content on the right of the image */}
                   <Typography
-                    variant="body2" // Smaller body text
+                    variant="body2"
                     sx={{
-                      mb: 2.5, // Reduced margin-bottom
-                      lineHeight: 1.7, // Slightly tighter line height
-                      color: "rgba(255,255,255,0.85)", // Slightly less white
-                      fontSize: { xs: "0.95rem", sm: "1rem" },
-                      maxWidth: { xs: "95%", md: "none" }, // Constrain width on smaller screens
-                      mx: { xs: "auto", md: "unset" }, // Center on smaller screens
+                      mb: 1.5,
+                      lineHeight: 1.6,
+                      color: "rgba(255,255,255,0.8)",
+                      fontSize: { xs: "0.85rem", sm: "0.9rem" }, // Smaller body text
+                      maxWidth: { xs: "90%", sm: "none" },
+                      mx: { xs: "auto", sm: "unset" },
                     }}
                   >
-                    I'm a passionate full-stack developer from Tanzania,
-                    dedicated to building elegant and scalable digital
-                    solutions. With a strong focus on clean UI/UX, I bring
-                    modern web technologies and thoughtful architecture together
-                    to create seamless, user-focused experiences.
+                    Passionate full-stack developer dedicated to building elegant, scalable digital solutions with a focus on clean UI/UX.
                   </Typography>
 
-                  {/* Tech Stack Icons */}
+                  {/* Tech Stack Icons - More compact and fewer visible */}
                   <Box
                     sx={{
                       display: "flex",
-                      gap: 1.5, // Reduced gap
-                      mb: 2.5, // Reduced margin-bottom
+                      gap: 1, // Further reduced gap
+                      mb: 1.5,
                       flexWrap: "wrap",
-                      justifyContent: { xs: "center", md: "flex-start" },
+                      justifyContent: { xs: "center", sm: "flex-start" },
                     }}
                   >
-                    <SiHtml5 size={26} color="#e44d26" />
-                    <SiCss3 size={26} color="#264de4" />
-                    <SiJavascript size={26} color="#f0db4f" />
-                    <SiReact size={26} color="#61dafb" />
-                    <SiPython size={26} color="#3776AB" />
-                    <SiDjango size={26} color="#092e20" />
+                    <Tooltip title="HTML5"><SiHtml5 size={22} color="#e44d26" /></Tooltip>
+                    <Tooltip title="CSS3"><SiCss3 size={22} color="#264de4" /></Tooltip>
+                    <Tooltip title="JavaScript"><SiJavascript size={22} color="#f0db4f" /></Tooltip>
+                    <Tooltip title="React"><SiReact size={22} color="#61dafb" /></Tooltip>
+                    <Tooltip title="Python"><SiPython size={22} color="#3776AB" /></Tooltip>
+                    <Tooltip title="Django"><SiDjango size={22} color="#092e20" /></Tooltip>
                   </Box>
 
-                  {/* Contact Info */}
+                  {/* Contact Info - Compact chips */}
                   <Box
                     sx={{
                       display: "flex",
                       flexWrap: "wrap",
-                      gap: 0.8, // Reduced gap
-                      justifyContent: { xs: "center", md: "flex-start" },
+                      gap: 0.5, // Even smaller gap
+                      justifyContent: { xs: "center", sm: "flex-start" },
                     }}
                   >
                     <Chip
-                      icon={<LocationOn sx={{ fontSize: 14 }} />} // Smaller icon
+                      icon={<LocationOn sx={{ fontSize: 12 }} />} // Tiny icon
                       label="Dar es Salaam"
                       size="small"
                       sx={{
-                        bgcolor: "rgba(33, 150, 243, 0.1)",
-                        color: "#2196f3",
-                        fontSize: "0.75rem", // Smaller font size
-                        height: 24, // Reduced height
-                        "& .MuiChip-label": { px: "6px" }, // Adjust label padding
+                        bgcolor: "rgba(33, 150, 243, 0.1)", color: "#2196f3", fontSize: "0.7rem", height: 22,
+                        "& .MuiChip-label": { px: "4px" }
                       }}
                       variant="outlined"
                     />
                     <Chip
-                      icon={<Phone sx={{ fontSize: 14 }} />}
+                      icon={<Phone sx={{ fontSize: 12 }} />}
                       label="+255 616 580 004"
                       size="small"
                       sx={{
-                        bgcolor: "rgba(76, 175, 80, 0.1)",
-                        color: "#4caf50",
-                        fontSize: "0.75rem",
-                        height: 24,
-                        "& .MuiChip-label": { px: "6px" },
+                        bgcolor: "rgba(76, 175, 80, 0.1)", color: "#4caf50", fontSize: "0.7rem", height: 22,
+                        "& .MuiChip-label": { px: "4px" }
                       }}
                       variant="outlined"
                     />
                     <Chip
-                      icon={<Email sx={{ fontSize: 14 }} />}
+                      icon={<Email sx={{ fontSize: 12 }} />}
                       label="innocrng23@example.com"
                       size="small"
                       sx={{
-                        bgcolor: "rgba(255, 152, 0, 0.1)",
-                        color: "#ff9800",
-                        fontSize: "0.75rem",
-                        height: 24,
-                        "& .MuiChip-label": { px: "6px" },
+                        bgcolor: "rgba(255, 152, 0, 0.1)", color: "#ff9800", fontSize: "0.7rem", height: 22,
+                        "& .MuiChip-label": { px: "4px" }
                       }}
                       variant="outlined"
                     />
@@ -314,381 +313,140 @@ export default function Portfolio() {
           </AnimatedSection>
         </Container>
 
-        <Container maxWidth="xl" sx={{ mb: { xs: 4, sm: 6 } }}>
-          {" "}
-          {/* Reduced margin-bottom */}
+        <Container maxWidth="md" sx={{ width: '100%', mb: { xs: 2, sm: 3 } }}>
           <AnimatedSection>
-            <Grid
-              container
-              spacing={3} // Reduced spacing between grid items
-              alignItems="stretch"
-              sx={{
-                flexDirection: { xs: "column", md: "row" },
-              }}
-            >
-              {/* Enhanced Skills Section (Left) */}
-              <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+            <Grid container spacing={2} alignItems="stretch"> {/* Reduced spacing */}
+              {/* Skills Section (Left) - More compact with "View All" dialog trigger */}
+              <Grid item xs={12} sm={6} sx={{ display: "flex" }}>
                 <Paper
                   sx={{
                     ...sectionStyles,
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    overflow: "hidden",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)", // Slightly lighter background
-                    border: "1px solid rgba(255, 255, 255, 0.1)", // Thinner border
-                    position: "relative", // For inner gradient effect
-                    "&:before": {
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background:
-                        "linear-gradient(45deg, rgba(33, 150, 243, 0.03), transparent 30%, transparent 70%, rgba(76, 175, 80, 0.03))",
-                      zIndex: 0,
-                    },
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "rgba(255, 255, 255, 0.04)",
                   }}
                 >
-                  <SectionTitle icon={<Code />} title="Skills" sx={{ mb: 2 }} />{" "}
-                  {/* Reduced margin-bottom */}
-                  <Box
-                    sx={{
-                      position: "relative",
-                      height: 160, // Reduced height significantly
-                      width: "100%",
-                      mt: 1, // Reduced margin-top
-                      mx: "auto", // Center the box
-                      borderRadius: 1,
-                      backgroundColor: "rgba(0, 0, 0, 0.15)", // Slightly less dark
-                      border: "1px solid rgba(255, 255, 255, 0.06)", // Thinner border
-                      overflow: "hidden",
-                      boxShadow: "inset 0 0 10px rgba(0,0,0,0.5)", // Inner shadow
-                      display: "flex", // Use flexbox for skill cards
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {/* Display fewer skill cards and make them smaller for a more compact look */}
-                    {skills.slice(0, 3).map((skill, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          position: "absolute",
-                          width: { xs: "80%", sm: "70%", md: "60%" }, // Responsive width
-                          animation: `compactCardAnimation 10s infinite ${
-                            index * 3
-                          }s forwards`, // Faster animation
-                          "@keyframes compactCardAnimation": {
-                            "0%": {
-                              transform: "translate(150%, -50%)",
-                              opacity: 0,
-                              zIndex: 1,
-                            },
-                            "10%": {
-                              transform: "translate(-50%, -50%)",
-                              opacity: 1,
-                              zIndex: 2,
-                            },
-                            "20%": {
-                              transform: "translate(-50%, -50%)",
-                              opacity: 1,
-                              zIndex: 2,
-                            },
-                            "30%": {
-                              transform: "translate(-150%, -50%)",
-                              opacity: 0,
-                              zIndex: 1,
-                            },
-                            "100%": {
-                              transform: "translate(150%, -50%)",
-                              opacity: 0,
-                              zIndex: 1,
-                            },
-                          },
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          pointerEvents: "none", // Prevent interaction while animating
-                        }}
-                      >
-                        <SkillCard
-                          skill={skill}
-                          sx={{
-                            width: "100%",
-                            maxWidth: "none",
-                            boxShadow: 4, // Smaller shadow
-                            backgroundColor: "rgba(0, 0, 0, 0.3)", // More transparent
-                            backdropFilter: "blur(5px)", // Less blur
-                            border: "1px solid rgba(255, 255, 255, 0.1)", // Thinner border
-                            p: 2, // Reduced padding
-                            "& .MuiTypography-h6": {
-                              fontSize: "1.2rem", // Smaller title
-                              fontWeight: "bold",
-                            },
-                            "& .MuiTypography-body2": {
-                              fontSize: "0.9rem", // Smaller body text
-                            },
-                            "& .MuiAvatar-root": {
-                              width: 48, // Smaller avatar
-                              height: 48, // Smaller avatar
-                              boxShadow: 2,
-                            },
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </Box>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 2,
-                      px: 2,
-                      textAlign: "center",
-                      color: "rgba(255,255,255,0.7)", // Slightly dimmer caption
-                      fontSize: "0.75rem", // Smaller font size
-                      lineHeight: 1.4,
-                      zIndex: 1, // Ensure text is above pseudo-element
-                    }}
-                  >
-                    Displaying key programming languages, frameworks, and tools.
+                  <SectionTitle icon={<LightbulbIcon sx={{ fontSize: 24 }} />} title="My Skills" sx={{ mb: 1 }} />
+                  <Typography variant="body2" sx={{ mb: 1.5, textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+                    Core competencies and tools I use.
                   </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => setLeftNavOpen(true)} // Re-purpose nav for full skill view
+                    size="small"
+                    startIcon={<InfoIcon />}
+                    sx={{
+                      bgcolor: "#2196F3",
+                      "&:hover": { bgcolor: "#1976D2" },
+                      fontSize: '0.75rem', py: 0.7, px: 2,
+                    }}
+                  >
+                    View All Skills
+                  </Button>
                 </Paper>
               </Grid>
 
-              {/* Projects Section (Right) - Streamlined */}
-              <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              {/* Projects Section (Right) - Streamlined with "View Gallery" dialog trigger */}
+              <Grid item xs={12} sm={6} sx={{ display: "flex" }}>
                 <Paper
                   sx={{
                     ...sectionStyles,
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
                     alignItems: "center",
-                    textAlign: "center",
-                    backgroundColor: "rgba(255, 255, 255, 0.03)", // Even more transparent
-                    border: "1px solid rgba(255, 255, 255, 0.1)", // Thinner border
-                    width: "100%",
-                    p: 3, // Reduced padding
-                    position: "relative",
-                    overflow: "hidden",
-                    "&:before": {
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: 3, // Thinner top bar
-                      background:
-                        "linear-gradient(90deg, #2196F3, #21CBF3, #4CAF50)", // More vibrant gradient
-                    },
-                    "&:hover": {
-                      boxShadow: "0 6px 24px rgba(33, 150, 243, 0.3)", // Refined hover shadow
-                      transform: "translateY(-1px)",
-                      transition: "all 0.3s ease",
-                    },
+                    justifyContent: "center",
+                    backgroundColor: "rgba(255, 255, 255, 0.02)",
+                    "&:before": { height: 2 }, // Thinner top bar
                   }}
                 >
-                  <Box sx={{ position: "relative", zIndex: 1 }}>
-                    <SectionTitle
-                      icon={
-                        <Work
-                          sx={{
-                            fontSize: 32, // Smaller icon
-                            background:
-                              "linear-gradient(135deg, #2196F3, #21CBF3)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                          }}
-                        />
-                      }
-                      title="My Projects"
-                      sx={{ mb: 2 }} // Reduced margin-bottom
-                    />
-
-                    <Box
-                      sx={{
-                        position: "relative",
-                        width: 150, // Smaller circle
-                        height: 150, // Smaller circle
-                        mx: "auto",
-                        mb: 3, // Reduced margin-bottom
-                        "&:hover .project-circle": {
-                          transform: "scale(1.03)", // Less aggressive scale
-                          boxShadow: "0 0 25px rgba(33, 150, 243, 0.5)", // Refined shadow
-                        },
-                      }}
-                    >
-                      <Box
-                        className="project-circle"
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: "50%",
-                          background:
-                            "linear-gradient(145deg, #2196F3, #21CBF3)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-                          boxShadow: "0 0 15px rgba(33, 150, 243, 0.3)", // Reduced shadow
-                          border: "2px solid rgba(255,255,255,0.2)", // Thinner border
-                          overflow: "hidden",
-                          "&:after": {
-                            content: '""',
-                            position: "absolute",
-                            top: "-50%",
-                            left: "-50%",
-                            right: "-50%",
-                            bottom: "-50%",
-                            background:
-                              "linear-gradient(transparent, rgba(255,255,255,0.08), transparent)", // More subtle shine
-                            transform: "rotate(20deg)", // Less rotation
-                            animation: "shine 2.5s infinite", // Faster shine
-                            "@keyframes shine": {
-                              "0%": {
-                                transform: "translateX(-100%) rotate(20deg)",
-                              },
-                              "100%": {
-                                transform: "translateX(100%) rotate(20deg)",
-                              },
-                            },
-                          },
-                        }}
-                      >
-                        <ArrowForward
-                          sx={{
-                            fontSize: 40, // Slightly smaller arrow
-                            color: "white",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                              transform: "scale(1.1)", // Less aggressive scale
-                            },
-                          }}
-                        />
-                      </Box>
-                    </Box>
-
-                    <Button
-                      component={Link}
-                      to="/projects"
-                      variant="outlined"
-                      sx={{
-                        mt: 1.5, // Reduced margin-top
-                        px: 3, // Reduced padding
-                        py: 1.2, // Reduced padding
-                        borderRadius: 30, // Slightly less rounded
-                        background: "rgba(33, 150, 243, 0.08)", // More transparent
-                        border: "1px solid rgba(33, 150, 243, 0.2)", // Thinner border
-                        color: "white",
-                        fontSize: "0.9rem", // Smaller font size
-                        fontWeight: 500, // Slightly less bold
-                        textTransform: "none",
-                        letterSpacing: "0.4px", // Tighter letter spacing
-                        transition: "all 0.3s ease",
-                        backdropFilter: "blur(6px)", // Less blur
-                        "&:hover": {
-                          background: "rgba(33, 150, 243, 0.15)", // More transparent hover
-                          borderColor: "rgba(33, 150, 243, 0.4)",
-                          boxShadow: "0 3px 10px rgba(33, 150, 243, 0.2)", // Reduced shadow
-                          transform: "translateY(-1px)",
-                        },
-                      }}
-                    >
-                      View Project Gallery
-                    </Button>
-
-                    <Typography
-                      variant="body2" // Smaller body text
-                      sx={{
-                        mt: 2, // Reduced margin-top
-                        px: 1,
-                        color: "rgba(255,255,255,0.8)", // Slightly dimmer
-                        maxWidth: "90%", // Wider text box
-                        mx: "auto",
-                        fontSize: "0.9rem", // Smaller font size
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      Explore my portfolio of professional projects and case
-                      studies.
-                    </Typography>
-                  </Box>
+                  <SectionTitle icon={<ProjectsIcon sx={{ fontSize: 24 }} />} title="My Projects" sx={{ mb: 1 }} />
+                  <Typography variant="body2" sx={{ mb: 1.5, textAlign: 'center', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>
+                    Showcasing my professional work.
+                  </Typography>
+                  <Button
+                    component={Link}
+                    to="/projects" // Keep direct link for gallery, but if it needs to be a dialog, change this
+                    variant="contained"
+                    size="small"
+                    startIcon={<ArrowForward />}
+                    sx={{
+                      bgcolor: "#4CAF50",
+                      "&:hover": { bgcolor: "#388E3C" },
+                      fontSize: '0.75rem', py: 0.7, px: 2,
+                    }}
+                  >
+                    View Projects
+                  </Button>
                 </Paper>
               </Grid>
             </Grid>
           </AnimatedSection>
         </Container>
 
-        {/* Experience Section */}
-        <Container maxWidth="lg" sx={{ mb: { xs: 3, sm: 5 } }}>
-          {" "}
-          {/* Reduced margin-bottom */}
+        {/* Experience & Education Section - Combined and Dialog-driven */}
+        <Container maxWidth="md" sx={{ width: '100%' }}>
           <AnimatedSection>
             <Paper
               sx={{
                 ...sectionStyles,
-                background:
-                  "linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(10, 10, 10, 0.9))",
+                background: "linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(10, 10, 10, 0.85))",
+                p: { xs: 1.5, sm: 2.5 },
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              <SectionTitle icon={<Work />} title="Experience" sx={{ mb: 1.5 }} />{" "}
-              {/* Reduced margin-bottom */}
-              <Box sx={{ mt: 1.5 }}>
-                {" "}
-                {/* Reduced margin-top */}
-                {experience.map((exp, index) => (
-                  <ExperienceItem
-                    key={index}
-                    experience={exp}
-                    // Pass a prop to make the item more compact if needed in ExperienceItem component
-                    compact={true}
-                  />
-                ))}
-              </Box>
-            </Paper>
-          </AnimatedSection>
-        </Container>
-
-        {/* Education Section */}
-        <Container maxWidth="lg" sx={{ mb: { xs: 3, sm: 5 } }}>
-          {" "}
-          {/* Reduced margin-bottom */}
-          <AnimatedSection>
-            <Paper
-              sx={{
-                ...sectionStyles,
-                background:
-                  "linear-gradient(135deg, rgba(10, 10, 10, 0.9), rgba(26, 26, 26, 0.9))",
-              }}
-            >
-              <SectionTitle icon={<School />} title="Education" sx={{ mb: 1.5 }} />{" "}
-              {/* Reduced margin-bottom */}
-              <Box sx={{ mt: 1.5 }}>
-                {" "}
-                {/* Reduced margin-top */}
-                {education.map((edu, index) => (
-                  <EducationItem
-                    key={index}
-                    education={edu}
-                    // Pass a prop to make the item more compact if needed in EducationItem component
-                    compact={true}
-                  />
-                ))}
-              </Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 1.5, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                Professional Journey
+              </Typography>
+              <Grid container spacing={2} sx={{ width: '100%' }}>
+                <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<ExperienceIcon />}
+                    onClick={() => setExperienceDialogOpen(true)}
+                    sx={{
+                      fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 1, sm: 1.2 }, px: 1.5,
+                      borderColor: 'rgba(255,255,255,0.15)', color: 'white',
+                      '&:hover': { borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.05)' }
+                    }}
+                  >
+                    View Experience
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ display: 'flex' }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<EducationIcon />}
+                    onClick={() => setEducationDialogOpen(true)}
+                    sx={{
+                      fontSize: { xs: '0.8rem', sm: '0.9rem' }, py: { xs: 1, sm: 1.2 }, px: 1.5,
+                      borderColor: 'rgba(255,255,255,0.15)', color: 'white',
+                      '&:hover': { borderColor: '#4CAF50', backgroundColor: 'rgba(76, 175, 80, 0.05)' }
+                    }}
+                  >
+                    View Education
+                  </Button>
+                </Grid>
+              </Grid>
+              <Typography variant="caption" sx={{ mt: 1.5, color: "rgba(255,255,255,0.6)", fontSize: "0.7rem", textAlign: 'center' }}>
+                Click to explore detailed work history and academic background.
+              </Typography>
             </Paper>
           </AnimatedSection>
         </Container>
       </Box>
 
-      <Footer />
+      <Footer sx={{ py: { xs: 1.5, sm: 2 }, mt: 'auto', textAlign: 'center', fontSize: '0.75rem' }} /> {/* Compact Footer */}
 
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top Button (retained for slight upward adjustment if needed) */}
       <Fab
         color="primary"
         size="small"
@@ -696,21 +454,17 @@ export default function Portfolio() {
         onClick={scrollToTop}
         sx={{
           position: "fixed",
-          bottom: { xs: 16, sm: 24 },
-          right: { xs: 16, sm: 24 },
-          bgcolor: "rgba(33, 150, 243, 0.8)",
-          backdropFilter: "blur(5px)",
-          boxShadow: "0 4px 12px rgba(33, 150, 243, 0.4)",
-          "&:hover": {
-            bgcolor: "#2196F3",
-            boxShadow: "0 6px 16px rgba(33, 150, 243, 0.6)",
-            transform: "translateY(-2px)",
-          },
-          transition: "all 0.3s ease-in-out",
+          bottom: { xs: 10, sm: 16 },
+          right: { xs: 10, sm: 16 },
+          bgcolor: "rgba(33, 150, 243, 0.7)", // More transparent
+          backdropFilter: "blur(3px)", // Less blur
+          boxShadow: "0 2px 8px rgba(33, 150, 243, 0.3)", // Reduced shadow
+          "&:hover": { bgcolor: "#2196F3", boxShadow: "0 4px 12px rgba(33, 150, 243, 0.5)" },
+          transition: "all 0.2s ease-in-out",
           zIndex: 999,
         }}
       >
-        <KeyboardArrowUpIcon />
+        <KeyboardArrowUpIcon sx={{ fontSize: '1.25rem' }} /> {/* Smaller icon */}
       </Fab>
 
       {/* Dialogs */}
@@ -721,6 +475,17 @@ export default function Portfolio() {
       <ProjectDialog
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
+      />
+      {/* New Dialogs for Experience and Education */}
+      <ExperienceDialog
+        open={experienceDialogOpen}
+        onClose={() => setExperienceDialogOpen(false)}
+        experience={experience} // Pass all experience data to the dialog
+      />
+      <EducationDialog
+        open={educationDialogOpen}
+        onClose={() => setEducationDialogOpen(false)}
+        education={education} // Pass all education data to the dialog
       />
     </Box>
   );

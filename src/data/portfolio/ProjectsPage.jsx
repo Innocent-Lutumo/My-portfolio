@@ -10,6 +10,8 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import ProjectCard from "./ProjectCard";
+import Port1 from "../../images/portfolio1.png";
+import Port2 from "../../images/portfolio2.png";
 
 // Sample project data
 const webProjects = [
@@ -17,7 +19,7 @@ const webProjects = [
     id: 1,
     title: "Farm Purchases and Rental System",
     description: "A full-featured online platform for selling, buying, and renting farm lands.",
-    image: "https://source.unsplash.com/random/600x400/?ecommerce",
+    image: Port1,
     path: "/projects/ecommerce",
     type: "web",
   },
@@ -25,7 +27,7 @@ const webProjects = [
     id: 2,
     title: "Portfolio Website",
     description: "A responsive portfolio built with React and MUI",
-    image: "https://source.unsplash.com/random/600x400/?portfolio",
+    image: Port2,
     path: "/projects/portfolio",
     type: "web",
   },
@@ -33,7 +35,7 @@ const webProjects = [
     id: 3,
     title: "Simple music web app",
     description: "a responsive web application for managing and playing music playlists built with only HTML and CSS.",
-    image: "https://source.unsplash.com/random/600x400/?tasks",
+    image: Port1,
     path: "/projects/task-manager",
     type: "web",
   },
@@ -70,7 +72,7 @@ const uiUxDesigns = [
     id: 7,
     title: "Dashboard UI - Healthcare Analytics",
     description: "Intuitive dashboard design for visualizing healthcare data.",
-    image: "https://source.unsplash.com/random/600x400/?healthdashboard",
+    image: Port2,
     path: "/projects/healthcare-dashboard",
     type: "ui/ux",
   },

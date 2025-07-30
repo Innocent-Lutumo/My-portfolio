@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const ProjectCard = ({ title, image, description, path }) => {
   return (
     <Card sx={{ 
-      maxWidth: 345,
+      width: 350,
       height: '100%',
       display: 'flex',
       flexDirection: 'column',

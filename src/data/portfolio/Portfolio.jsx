@@ -210,7 +210,7 @@ export default function Portfolio() {
                     <Typewriter
                       words={[
                         "I'm Innocent Felix Lutumo",
-                        "I'm a Full Stack Developer",
+                        "I'm a Web Developer",
                         "I'm a UI/UX Designer",
                       ]}
                       loop

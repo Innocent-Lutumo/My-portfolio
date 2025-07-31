@@ -1,4 +1,4 @@
-// src/Portfolio.jsx (or wherever your main page component is located)
+// src/Portfolio.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -11,40 +11,35 @@ import {
   Chip,
   Avatar,
   IconButton,
+  useMediaQuery, // Import useMediaQuery for responsiveness
+  useTheme, // Import useTheme to access breakpoints
 } from "@mui/material";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import SchoolIcon from "@mui/icons-material/School";
 import CodeIcon from "@mui/icons-material/Code";
-import DashboardIcon from "@mui/icons-material/Dashboard"; // For projects
-import PersonIcon from "@mui/icons-material/Person"; // For the main profile icon on Contact button
-import { GitHub, LinkedIn, Mail, Phone } from "@mui/icons-material"; // Example icons for contact
-
-// Import your actual data files. Adjust paths as necessary.
-// Example: if Portfolio.jsx is in 'src/', and 'experience.js' is in 'src/'
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonIcon from "@mui/icons-material/Person";
+import { GitHub, LinkedIn, Mail, Phone } from "@mui/icons-material";
 import { experience as experiences } from "../../data/experience";
 import { education as educationData } from "../../data/education";
+import { skillsData } from "../skills"; 
 import ContactDialog from "../../components/ContactDialog";
-import ProjectsDialog from "./ProjectsPage"; // Adjust path to your ProjectsDialog component
-// If you have skill data and project data, import them too
-// import { skillsData } from './skillsData';
-// import { projectsData } from './projectsData';
-
-// Import the content components (using the new names for clarity, adjust if you prefer old ones)
-import ExperienceContent from "../../components/ExperienceDialog"; // Adjust path
-import EducationContent from "../../components/EducationDialog"; // Adjust path
-// You'll need to create these if you want skills/projects in the right panel
-// import SkillsContent from './components/SkillsContent';
-// import ProjectsContent from './components/ProjectsContent';
-
-// Placeholder for profile image - replace with your actual image path
-import profileImage from "../../images/innoc.jpg"; // Adjust path to your image
+import ProjectsDialog from "./ProjectsPage";
+import ExperienceContent from "../../components/ExperienceDialog";
+import EducationContent from "../../components/EducationDialog";
+import SkillsContent from "../../components/SkillsContent"; // Import the new SkillsContent component
+import profileImage from "../../images/innoc.jpg"; // Correct path as per your code
 
 const Portfolio = () => {
   const [openContact, setOpenContact] = useState(false);
   const [openProjects, setOpenProjects] = useState(false);
-  // State to manage which content is displayed in the right panel
   const [activeRightPanelContent, setActiveRightPanelContent] =
-    useState("experience");
+    useState("experience"); // Default to experience
+
+  const theme = useTheme();
+  // Check for screen sizes
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // True for screens <= 600px
+  const isTablet = useMediaQuery(theme.breakpoints.down("md")); // True for screens <= 900px
 
   // Function to determine which component to render in the right panel
   const renderRightPanelContent = () => {
@@ -53,11 +48,8 @@ const Portfolio = () => {
         return <ExperienceContent experience={experiences} />;
       case "education":
         return <EducationContent education={educationData} />;
-      // Add cases for other content if you have them, e.g.:
-      // case 'skills':
-      //   return <SkillsContent skills={skillsData} />;
-      // case 'projects':
-      //   return <ProjectsContent projects={projectsData} />;
+      case 'skills':
+        return <SkillsContent skills={skillsData} />; // Use SkillsContent here
       default:
         return (
           <Box sx={{ p: 3, textAlign: "center" }}>
@@ -73,6 +65,7 @@ const Portfolio = () => {
     <Box
       sx={{
         display: "flex",
+        flexDirection: { xs: "column", md: "row" }, // Stack vertically on mobile/tablet, side-by-side on desktop
         minHeight: "100vh",
         bgcolor: "#0a0a0a", // Dark background
         color: "white",
@@ -80,16 +73,22 @@ const Portfolio = () => {
       }}
     >
       {/* Left/Main Content Area */}
-      <Box sx={{ flexGrow: 1, p: 4, maxWidth: "calc(100% - 400px)" }}>
-        {" "}
-        {/* Allocate space for right panel */}
-        {/* Header (Top Left Logo and Top Right Contact) - as seen in your image */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+          maxWidth: { xs: "100%", md: "calc(100% - 400px)" }, // Full width on mobile/tablet, reduced on desktop
+        }}
+      >
+        {/* Header (Top Left Logo and Top Right Contact) */}
         <Box
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" }, // Stack on xs, row on sm+
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" }, // Align items
             mb: 4,
+            gap: { xs: 2, sm: 0 }, // Gap for stacked items on xs
           }}
         >
           <Typography
@@ -114,23 +113,32 @@ const Portfolio = () => {
             CONTACT
           </Button>
         </Box>
+
         {/* Profile Card */}
         <Card
           sx={{
             bgcolor: "#1a1a1a",
             color: "white",
             borderRadius: 2,
-            p: 3,
+            p: { xs: 2, sm: 3 }, // Responsive padding
             mb: 4,
           }}
         >
-          <CardContent sx={{ display: "flex", alignItems: "center" }}>
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" }, // Stack on xs, row on sm+
+              alignItems: { xs: "center", sm: "flex-start" }, // Center avatar on xs
+              textAlign: { xs: "center", sm: "left" }, // Center text on xs
+            }}
+          >
             <Avatar
               src={profileImage}
               sx={{
-                width: 120,
-                height: 120,
-                mr: 3,
+                width: { xs: 100, sm: 120 }, // Responsive avatar size
+                height: { xs: 100, sm: 120 },
+                mr: { xs: 0, sm: 3 }, // No margin right on xs, 3 on sm+
+                mb: { xs: 2, sm: 0 }, // Margin bottom on xs, none on sm+
                 border: "2px solid #6200EE",
               }}
             />
@@ -142,7 +150,12 @@ const Portfolio = () => {
                 Passionate full-stack developer dedicated to building elegant,
                 scalable digital solutions with a focus on clean UI/UX.
               </Typography>
-              <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+              <Stack
+                direction={{ xs: "column", sm: "row" }} // Stack on xs, row on sm+
+                spacing={1}
+                sx={{ mb: 2, flexWrap: "wrap", justifyContent: { xs: "center", sm: "flex-start" } }} // Center chips on xs
+              >
+                {/* Chip for HTML5 */}
                 <Chip
                   label="HTML5"
                   sx={{ bgcolor: "#E34F26", color: "white" }}
@@ -154,6 +167,7 @@ const Portfolio = () => {
                     />
                   }
                 />
+                {/* Chip for CSS3 */}
                 <Chip
                   label="CSS3"
                   sx={{ bgcolor: "#1572B6", color: "white" }}
@@ -165,6 +179,7 @@ const Portfolio = () => {
                     />
                   }
                 />
+                {/* Chip for JS */}
                 <Chip
                   label="JS"
                   sx={{ bgcolor: "#F7DF1E", color: "black" }}
@@ -176,6 +191,7 @@ const Portfolio = () => {
                     />
                   }
                 />
+                {/* Chip for React */}
                 <Chip
                   label="React"
                   sx={{ bgcolor: "#61DAFB", color: "black" }}
@@ -187,7 +203,7 @@ const Portfolio = () => {
                     />
                   }
                 />
-
+                {/* Chip for Python */}
                 <Chip
                   label="Python"
                   sx={{ bgcolor: "#3776AB", color: "white" }}
@@ -199,6 +215,7 @@ const Portfolio = () => {
                     />
                   }
                 />
+                {/* Chip for Django */}
                 <Chip
                   label="Django"
                   sx={{ bgcolor: "#092E20", color: "white" }}
@@ -211,7 +228,12 @@ const Portfolio = () => {
                   }
                 />
               </Stack>
-              <Stack direction="row" spacing={1} flexWrap="wrap">
+              <Stack
+                direction={{ xs: "column", sm: "row" }} // Stack on xs, row on sm+
+                spacing={1}
+                flexWrap="wrap"
+                justifyContent={{ xs: "center", sm: "flex-start" }} // Center chips on xs
+              >
                 <Chip
                   label="Dar es Salaam"
                   icon={<PersonIcon />}
@@ -231,8 +253,13 @@ const Portfolio = () => {
             </Box>
           </CardContent>
         </Card>
+
         {/* Skills and Projects Cards */}
-        <Stack direction="row" spacing={3} sx={{ mb: 4 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }} // Stack on xs, row on sm+
+          spacing={3}
+          sx={{ mb: 4 }}
+        >
           <Card
             sx={{
               flex: 1,
@@ -288,20 +315,25 @@ const Portfolio = () => {
             </CardContent>
           </Card>
         </Stack>
+
         {/* Professional Journey Section (Experience and Education Buttons) */}
         <Card
           sx={{
             bgcolor: "#1a1a1a",
             color: "white",
             borderRadius: 2,
-            p: 3,
+            p: { xs: 2, sm: 3 }, // Responsive padding
             mb: 4,
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
             Professional Journey
           </Typography>
-          <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }} // Stack on xs, row on sm+
+            spacing={2}
+            sx={{ mb: 2 }}
+          >
             <Button
               variant={
                 activeRightPanelContent === "experience"
@@ -363,6 +395,7 @@ const Portfolio = () => {
             Click to explore detailed work history and academic background
           </Typography>
         </Card>
+
         {/* Social Media/Contact Footer (Example) */}
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <IconButton
@@ -387,6 +420,23 @@ const Portfolio = () => {
             © {new Date().getFullYear()} Innocent Lutumo. All rights reserved.
           </Typography>
         </Box>
+
+        {/* Right-Hand Dynamic Content Panel - On smaller screens, it appears here (below main content) */}
+        {isTablet && ( // Only render this section if on tablet or mobile
+          <Box
+            sx={{
+              width: "100%", // Full width on smaller screens
+              bgcolor: "#121212",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.5)", // Shadow below
+              overflowY: "auto",
+              p: 2,
+              mt: 4, // Margin top to separate from main content
+              borderRadius: 2,
+            }}
+          >
+            {renderRightPanelContent()}
+          </Box>
+        )}
       </Box>
 
       {/* Contact Dialog Component */}
@@ -398,20 +448,22 @@ const Portfolio = () => {
         handleClose={() => setOpenProjects(false)}
       />
 
-      {/* Right-Hand Dynamic Content Panel */}
-      <Box
-        sx={{
-          width: "400px", // Fixed width for the dynamic panel
-          flexShrink: 0, // Prevent it from shrinking
-          bgcolor: "#121212", // A slightly different dark background for the panel
-          boxShadow: "-4px 0 10px rgba(0,0,0,0.5)", // Optional shadow for visual separation
-          overflowY: "auto", // Enable vertical scrolling if content overflows
-          p: 2, // Padding inside the panel
-          borderLeft: "1px solid rgba(255,255,255,0.1)", // Subtle border
-        }}
-      >
-        {renderRightPanelContent()}
-      </Box>
+      {/* Right-Hand Dynamic Content Panel - Only on larger screens */}
+      {!isTablet && ( // Only render this section if on desktop (not tablet/mobile)
+        <Box
+          sx={{
+            width: "400px", // Fixed width for desktop
+            flexShrink: 0,
+            bgcolor: "#121212",
+            boxShadow: "-4px 0 10px rgba(0,0,0,0.5)",
+            overflowY: "auto",
+            p: 2,
+            borderLeft: "1px solid rgba(255,255,255,0.1)",
+          }}
+        >
+          {renderRightPanelContent()}
+        </Box>
+      )}
 
       {/* Scroll to Top Button (from your image) */}
       <IconButton

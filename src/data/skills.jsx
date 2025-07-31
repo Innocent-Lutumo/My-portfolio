@@ -1,4 +1,4 @@
-export const skills = [
+export const skillsData = [
     { name: "React.js", level: 80 },
     { name: "Django", level: 80 },
     { name: "Network Troubleshooting", level: 85 },

@@ -42,7 +42,7 @@ const ProjectCard = ({ title, image, description, path }) => {
           borderBottom: "1px solid rgba(255,255,255,0.1)",
           position: "absolute",
           top: 0,
-          left: -5,
+          left: 0,
           width: "80%",
           transform: "translateY(-20px)",
           borderRadius: "2px",
